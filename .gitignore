@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 题目数据备份文件
+questions_backup_*.json
+questions_before_opt.json
+
+# Claude Code 配置
+.claude/
+
+# 系统文件
+Thumbs.db
+desktop.ini
