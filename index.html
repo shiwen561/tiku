@@ -7,37 +7,37 @@
 <style>
 /* ========== CSS Variables & Theme ========== */
 :root {
-  --primary: #3737FF;
-  --primary-dark: #2B2BD0;
-  --primary-light: #EDEDFF;
-  --purple: #5B41E8;
-  --purple-light: #F3F0FF;
-  --bg: #F5F6FA;
+  --primary: #0F766E;
+  --primary-dark: #115E59;
+  --primary-light: #E6F5F2;
+  --purple: #D97706;
+  --purple-light: #FFF7ED;
+  --bg: #F7F8F6;
   --card-bg: #FFFFFF;
-  --text: #1A1A1A;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --border: #E8E8ED;
-  --border-light: #F3F3F5;
-  --success: #22C55E;
-  --success-bg: #F0FDF5;
-  --success-border: #BBF7D0;
-  --danger: #EF4444;
+  --text: #17211F;
+  --text-secondary: #52605D;
+  --text-muted: #8A9692;
+  --border: #E3E8E5;
+  --border-light: #F0F3F1;
+  --success: #16A34A;
+  --success-bg: #ECFDF3;
+  --success-border: #B7EFC8;
+  --danger: #DC2626;
   --danger-bg: #FEF2F2;
   --danger-border: #FECACA;
-  --warning: #F59E0B;
-  --warning-bg: #FFFBEB;
-  --warning-border: #FDE68A;
-  --radius: 12px;
+  --warning: #D97706;
+  --warning-bg: #FFF7ED;
+  --warning-border: #FED7AA;
+  --radius: 8px;
   --radius-sm: 8px;
   --radius-xs: 6px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 2px rgba(15, 35, 31, 0.05);
+  --shadow: 0 8px 24px rgba(15, 35, 31, 0.06);
+  --shadow-md: 0 12px 28px rgba(15, 35, 31, 0.08);
+  --shadow-lg: 0 18px 44px rgba(15, 35, 31, 0.12);
   --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
-  --sidebar-width: 200px;
-  --right-panel-width: 220px;
+  --sidebar-width: 208px;
+  --right-panel-width: 248px;
 }
 
 /* ========== Reset & Base ========== */
@@ -49,50 +49,57 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   display: flex; flex-direction: column;
+  letter-spacing: 0;
 }
 
 /* ========== Top Bar ========== */
 .top-bar {
   display: flex; align-items: center; justify-content: space-between;
-  background: var(--card-bg); padding: 16px 24px;
+  background: rgba(255,255,255,0.96); padding: 14px 24px;
   border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  position: sticky; top: 0; z-index: 20;
 }
-.top-bar .brand { font-size: 20px; font-weight: 700; color: var(--primary); }
-.top-bar .top-stats { display: flex; gap: 24px; }
-.top-bar .top-stat { text-align: center; }
-.top-bar .top-stat .num { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
+.top-bar .brand { font-size: 20px; font-weight: 800; color: var(--primary-dark); white-space: nowrap; }
+.top-bar .top-stats { display: flex; gap: 10px; align-items: center; }
+.top-bar .top-stat {
+  min-width: 92px; padding: 8px 12px; text-align: left;
+  background: #FAFBFA; border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm);
+}
+.top-bar .top-stat .num { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1.1; }
 .top-bar .top-stat .lbl { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.top-bar .user-info { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); }
-.top-bar .user-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--primary-light); color: var(--primary);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 14px;
+.login-btn {
+  min-width: 86px; height: 40px; border-radius: var(--radius);
+  border: 1px solid var(--primary); background: var(--primary);
+  color: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all var(--transition); box-shadow: 0 8px 18px rgba(15,118,110,0.18);
 }
+.login-btn:hover { background: var(--primary-dark); border-color: var(--primary-dark); transform: translateY(-1px); }
 
 /* ========== App Layout ========== */
 .app-layout { display: flex; flex: 1; min-height: 0; }
 
 /* ========== Left Sidebar ========== */
 .sidebar-left {
-  width: var(--sidebar-width); background: var(--card-bg);
+  width: var(--sidebar-width); background: #FFFFFF;
   border-right: 1px solid var(--border); display: flex;
   flex-direction: column; flex-shrink: 0; overflow-y: auto;
 }
-.sidebar-left .nav-menu { flex: 1; padding: 12px 0; }
+.sidebar-left .nav-menu { flex: 1; padding: 18px 10px; }
 .sidebar-left .nav-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 12px 20px; cursor: pointer; font-size: 14px;
+  padding: 11px 14px; cursor: pointer; font-size: 14px;
   color: var(--text-secondary); transition: all var(--transition);
-  border-left: 3px solid transparent; margin: 2px 0;
+  border-left: 3px solid transparent; margin: 4px 0; border-radius: var(--radius);
 }
-.sidebar-left .nav-item:hover { background: var(--primary-light); color: var(--primary); }
+.sidebar-left .nav-item:hover { background: var(--primary-light); color: var(--primary-dark); }
 .sidebar-left .nav-item.active {
-  background: var(--primary-light); color: var(--primary);
+  background: var(--primary-light); color: var(--primary-dark);
   border-left-color: var(--primary); font-weight: 600;
 }
 .sidebar-left .nav-item .nav-icon { font-size: 18px; width: 24px; text-align: center; }
-.sidebar-left .nav-bottom { padding: 12px 0; border-top: 1px solid var(--border); }
+.sidebar-left .nav-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
 .sidebar-left .nav-bottom .nav-item {
   font-size: 13px; color: var(--text-muted);
 }
@@ -102,53 +109,91 @@ body {
 
 /* ========== Filter Bar ========== */
 .filter-bar {
-  display: flex; gap: 8px; padding: 12px 16px; background: var(--card-bg);
+  display: flex; gap: 10px; padding: 14px 18px; background: rgba(255,255,255,0.92);
   border-bottom: 1px solid var(--border); flex-wrap: wrap; align-items: center;
 }
 .filter-bar select {
-  padding: 6px 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
-  font-size: 13px; color: var(--text-secondary); background: var(--bg);
-  cursor: pointer; min-width: 110px; transition: border-color var(--transition);
+  height: 38px; padding: 0 34px 0 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  font-size: 13px; color: var(--text-secondary); background: #FFFFFF;
+  cursor: pointer; min-width: 116px; transition: all var(--transition);
 }
-.filter-bar select:focus { border-color: var(--primary); outline: none; }
+.filter-bar select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(15,118,110,0.12); }
 .filter-bar .filter-spacer { flex: 1; }
+
+/* ========== Chapter Practice ========== */
+.chapter-view {
+  flex: 1; overflow-y: auto; padding: 22px; background: var(--bg);
+}
+.chapter-panel {
+  max-width: 1080px; margin: 0 auto; background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+}
+.chapter-toolbar {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  padding: 16px 18px; border-bottom: 1px solid var(--border); background: #FAFBFA;
+}
+.chapter-toolbar h3 {
+  margin: 0; font-size: 18px; color: var(--text); flex: 1 1 220px;
+}
+.chapter-toolbar select {
+  height: 38px; padding: 0 34px 0 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: #fff; min-width: 220px;
+}
+.chapter-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px; padding: 18px;
+}
+.chapter-card {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; background: #fff; min-height: 132px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.chapter-card .chapter-name { font-weight: 700; color: var(--text); line-height: 1.35; }
+.chapter-card .chapter-meta { font-size: 12px; color: var(--text-muted); }
+.chapter-card .chapter-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.chapter-card .chapter-tag {
+  font-size: 12px; padding: 2px 7px; border-radius: 999px;
+  background: var(--primary-light); color: var(--primary-dark);
+}
+.chapter-card button { align-self: flex-start; }
 
 /* ========== Question Scroll Area ========== */
 .question-scroll {
-  flex: 1; overflow-y: auto; padding: 24px;
-  display: flex; gap: 16px;
+  flex: 1; overflow-y: auto; padding: 22px;
+  display: flex; gap: 18px; align-items: flex-start;
 }
 
 /* ========== Question Card ========== */
 .q-card {
   flex: 1; background: var(--card-bg); border-radius: var(--radius);
-  padding: 24px; box-shadow: var(--shadow); max-width: 750px;
+  padding: 26px; box-shadow: var(--shadow); max-width: 860px;
+  border: 1px solid var(--border);
 }
 .q-card .q-tags { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
 .q-card .q-tag {
-  padding: 3px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+  padding: 4px 10px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 700;
 }
 .q-card .q-tag.t-subject { background: var(--primary-light); color: var(--primary); }
-.q-card .q-tag.t-single { background: #FCE7F3; color: #BE185D; }
-.q-card .q-tag.t-multi { background: #FCE7F3; color: #BE185D; }
+.q-card .q-tag.t-single { background: var(--purple-light); color: var(--warning); }
+.q-card .q-tag.t-multi { background: var(--purple-light); color: var(--warning); }
 .q-card .q-tag.t-judge { background: #D1FAE5; color: #047857; }
 .q-card .q-tag.t-text { background: var(--warning-bg); color: var(--warning); }
 
-.q-card .q-body { font-size: 16px; line-height: 1.8; color: var(--text); margin-bottom: 20px; }
+.q-card .q-body { font-size: 16px; line-height: 1.85; color: var(--text); margin-bottom: 22px; }
 
 /* ========== Options ========== */
-.options { display: flex; flex-direction: column; gap: 12px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
 .option {
   display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 13px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm);
   cursor: pointer; transition: all var(--transition); background: var(--card-bg);
 }
-.option:hover { border-color: var(--primary); background: var(--primary-light); }
-.option.selected { border-color: var(--primary); background: var(--primary-light); }
+.option:hover { border-color: var(--primary); background: #F5FBF9; transform: translateY(-1px); }
+.option.selected { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 3px rgba(15,118,110,0.10); }
 .option.correct { border-color: var(--success); background: var(--success-bg); }
 .option.wrong { border-color: var(--danger); background: var(--danger-bg); animation: shake 0.4s ease; }
 .option .o-letter {
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 30px; height: 30px; border-radius: var(--radius-xs);
   background: var(--border-light); display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: 14px; color: var(--text-secondary); flex-shrink: 0;
   transition: all var(--transition);
@@ -174,25 +219,30 @@ body {
   display: flex; gap: 10px; margin-top: 24px; align-items: center;
 }
 .btn {
-  padding: 10px 20px; border-radius: var(--radius); font-size: 14px;
+  padding: 10px 18px; border-radius: var(--radius); font-size: 14px;
   border: none; cursor: pointer; font-weight: 600; transition: all var(--transition);
   display: inline-flex; align-items: center; gap: 6px; justify-content: center;
 }
 .btn:active { transform: scale(0.97); }
 .btn-outline {
   background: var(--card-bg); color: var(--text-secondary);
-  border: 1.5px solid var(--border); min-width: 100px;
+  border: 1px solid var(--border); min-width: 100px;
 }
 .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
 .btn-primary { background: var(--primary); color: #fff; min-width: 120px; }
 .btn-primary:hover { background: var(--primary-dark); }
-.btn-purple { background: var(--purple); color: #fff; min-width: 120px; }
-.btn-purple:hover { filter: brightness(1.1); }
+.btn-purple { background: var(--warning); color: #fff; min-width: 120px; }
+.btn-purple:hover { background: #B45309; }
 .btn-success { background: var(--success); color: #fff; }
 .btn-danger { background: var(--danger); color: #fff; }
+.btn-ai {
+  background: #EAF6FF; color: #0369A1; border: 1px solid #BAE6FD;
+  min-width: 112px;
+}
+.btn-ai:hover { background: #DFF3FF; border-color: #7DD3FC; color: #075985; }
 .btn-mark {
-  background: none; border: 1.5px solid var(--border); color: var(--text-muted);
-  width: 42px; height: 42px; border-radius: 50%; font-size: 18px;
+  background: #fff; border: 1px solid var(--border); color: var(--text-muted);
+  width: 42px; height: 42px; border-radius: var(--radius); font-size: 18px;
   cursor: pointer; transition: all var(--transition); display: flex;
   align-items: center; justify-content: center; flex-shrink: 0;
 }
@@ -201,18 +251,24 @@ body {
 
 /* ========== Right Panel ========== */
 .sidebar-right {
-  width: var(--right-panel-width); background: var(--card-bg);
-  border-left: 1px solid var(--border); padding: 16px; flex-shrink: 0;
-  overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+  width: var(--right-panel-width); background: transparent;
+  border-left: none; padding: 0; flex-shrink: 0;
+  overflow-y: auto; display: flex; flex-direction: column; gap: 14px;
 }
-.answer-sheet { }
+.answer-sheet {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+}
 .answer-sheet .as-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .answer-sheet .as-title { font-size: 14px; font-weight: 600; color: var(--text); }
 .answer-sheet .as-clear { font-size: 12px; color: var(--text-muted); cursor: pointer; }
-.answer-sheet .as-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.answer-sheet .as-range {
+  font-size: 12px; color: var(--text-muted); margin: -4px 0 10px;
+}
+.answer-sheet .as-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
 .answer-sheet .as-dot {
-  width: 32px; height: 32px; border-radius: var(--radius-sm); font-size: 12px;
-  cursor: pointer; border: 1.5px solid var(--border); background: var(--card-bg);
+  width: 36px; height: 32px; border-radius: var(--radius-xs); font-size: 12px;
+  cursor: pointer; border: 1px solid var(--border); background: var(--card-bg);
   color: var(--text-secondary); font-weight: 500; display: flex;
   align-items: center; justify-content: center; transition: all var(--transition);
 }
@@ -222,18 +278,72 @@ body {
 .answer-sheet .as-dot.correct { border-color: var(--success); color: var(--success); background: var(--success-bg); }
 .answer-sheet .as-dot.answered:not(.correct):not(.wrong) { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 .answer-sheet .as-dot.text-type { border-color: var(--warning); }
+.answer-sheet .as-pager {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  gap: 8px; margin-top: 12px;
+}
+.answer-sheet .as-page-btn {
+  height: 32px; border-radius: var(--radius-xs); border: 1px solid var(--border);
+  background: #fff; color: var(--text-secondary); cursor: pointer;
+  font-size: 12px; font-weight: 700; transition: all var(--transition);
+}
+.answer-sheet .as-page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.answer-sheet .as-page-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.answer-sheet .as-page-info { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
 
 /* ========== Stats Box ========== */
 .stats-box {
-  background: var(--bg); border-radius: var(--radius-sm); padding: 14px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
 }
 .stats-box .sb-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
 .stats-box .sb-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin: 4px 0; }
 .stats-box .sb-row span:last-child { font-weight: 600; color: var(--text); }
 
+/* ========== AI Explain Modal ========== */
+.ai-modal-mask {
+  position: fixed; inset: 0; z-index: 1200; display: none;
+  align-items: center; justify-content: center; padding: 24px;
+  background: rgba(15, 23, 42, 0.28);
+}
+.ai-modal-mask.visible { display: flex; animation: fadeIn 0.18s ease; }
+.ai-modal {
+  width: min(680px, 100%); max-height: min(760px, calc(100vh - 48px));
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); overflow: hidden; display: flex; flex-direction: column;
+}
+.ai-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px; border-bottom: 1px solid var(--border);
+}
+.ai-modal-title { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; color: var(--text); }
+.ai-modal-close {
+  width: 32px; height: 32px; border-radius: var(--radius-xs);
+  border: 1px solid var(--border); background: #fff; color: var(--text-secondary);
+  cursor: pointer; font-size: 18px; line-height: 1;
+}
+.ai-modal-close:hover { border-color: var(--primary); color: var(--primary); }
+.ai-modal-body { padding: 18px; overflow-y: auto; }
+.ai-status-chip {
+  display: inline-flex; align-items: center; padding: 4px 9px;
+  border-radius: var(--radius-xs); background: var(--primary-light);
+  color: var(--primary-dark); font-size: 12px; font-weight: 700; margin-bottom: 14px;
+}
+.ai-section {
+  padding: 14px 0; border-top: 1px solid var(--border-light);
+}
+.ai-section:first-of-type { border-top: none; padding-top: 0; }
+.ai-section h4 { font-size: 14px; color: var(--text); margin-bottom: 7px; }
+.ai-section p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; }
+.ai-modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 14px 18px; border-top: 1px solid var(--border); background: #FAFBFA;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 /* ========== Text Answer ========== */
 .text-answer {
-  width: 100%; min-height: 130px; padding: 14px; border: 1.5px solid var(--border);
+  width: 100%; min-height: 130px; padding: 14px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); font-size: 15px; font-family: inherit;
   resize: vertical; line-height: 1.7; background: var(--bg); color: var(--text);
 }
@@ -242,7 +352,7 @@ body {
 /* ========== Exam Mode ========== */
 .exam-config {
   background: var(--card-bg); border-radius: var(--radius); padding: 24px;
-  box-shadow: var(--shadow); margin: 24px;
+  box-shadow: var(--shadow); border: 1px solid var(--border); margin: 24px;
 }
 .exam-config h3 { margin-bottom: 16px; font-size: 18px; }
 .exam-config .row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
@@ -255,7 +365,7 @@ body {
 .exam-layout { display: flex; gap: 16px; padding: 0 24px; }
 .exam-sidebar {
   width: 200px; background: var(--card-bg); border-radius: var(--radius);
-  padding: 14px; box-shadow: var(--shadow); flex-shrink: 0;
+  padding: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); flex-shrink: 0;
 }
 .exam-sidebar .sidebar-title { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
 .exam-sidebar .q-dot {
@@ -269,10 +379,49 @@ body {
 .exam-sidebar .q-dot.answered { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
 .exam-sidebar .q-dot.text-type { border-color: var(--warning); }
 .exam-sidebar .q-dot.text-type.answered { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+.stats {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  padding: 18px 24px 10px;
+}
+.stat-chip, .timer-chip, .tag {
+  display: inline-flex; align-items: center; min-height: 28px;
+  padding: 5px 10px; border-radius: var(--radius-xs);
+  background: var(--primary-light); color: var(--primary-dark);
+  font-size: 12px; font-weight: 700;
+}
+.timer-chip { background: var(--warning-bg); color: var(--warning); }
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px; box-shadow: var(--shadow);
+}
+.q-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.tag.type-single, .tag.type-multi { background: var(--purple-light); color: var(--warning); }
+.tag.type-judge { background: var(--success-bg); color: var(--success); }
+.tag.type-text { background: var(--warning-bg); color: var(--warning); }
+.option .letter {
+  width: 30px; height: 30px; border-radius: var(--radius-xs);
+  background: var(--border-light); display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; color: var(--text-secondary); flex-shrink: 0;
+}
+.option.selected .letter { background: var(--primary); color: #fff; }
+.option .text { flex: 1; font-size: 15px; }
+.nav {
+  display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;
+}
+.nav button {
+  min-width: 110px; height: 40px; padding: 0 16px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: #fff; color: var(--text-secondary);
+  cursor: pointer; font-weight: 700; transition: all var(--transition);
+}
+.nav button:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.nav button:last-child {
+  background: var(--primary); border-color: var(--primary); color: #fff;
+}
+.nav button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .result-card {
   background: var(--card-bg); border-radius: var(--radius); padding: 32px 24px;
-  box-shadow: var(--shadow); text-align: center; margin: 24px;
+  box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; margin: 24px;
 }
 .result-card .score { font-size: 72px; font-weight: 800; color: var(--success); line-height: 1; }
 .result-card .score.fail { color: var(--danger); }
@@ -320,7 +469,7 @@ body {
 .calc-panel {
   position: fixed; z-index: 1001; display: none;
   width: 280px; background: var(--card-bg); border-radius: var(--radius);
-  box-shadow: var(--shadow-lg); overflow: hidden; user-select: none;
+  box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden; user-select: none;
 }
 .calc-panel.visible { display: block; animation: floatIn 0.2s ease; }
 .calc-panel.dragging { transition: none; }
@@ -357,9 +506,12 @@ body {
   .top-bar .top-stats { gap: 14px; }
   .top-bar .top-stat .num { font-size: 22px; }
   .top-bar .brand { font-size: 16px; }
+  .top-bar .top-stat { min-width: 80px; }
 }
 @media (max-width: 600px) {
   .top-bar { flex-direction: column; gap: 8px; text-align: center; }
+  .top-bar .top-stats { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); }
+  .login-btn { width: 100%; max-width: 220px; }
   .filter-bar select { min-width: 90px; font-size: 12px; }
   .q-card { padding: 16px; }
   .action-bar { flex-wrap: wrap; }
@@ -367,7 +519,6 @@ body {
   .exam-layout { flex-direction: column; padding: 0; }
   .exam-sidebar { width: 100%; }
 }</style>
-</style>
 </head>
 <body>
 
@@ -380,10 +531,7 @@ body {
     <div class="top-stat"><div class="num" id="topWrong">0</div><div class="lbl">错题</div></div>
     <div class="top-stat"><div class="num" id="topAccuracy">-</div><div class="lbl">正确率</div></div>
   </div>
-  <div class="user-info">
-    <div class="user-avatar" id="userAvatar">U</div>
-    <span id="userName">用户</span>
-  </div>
+  <button class="login-btn" type="button" onclick="login()">登录</button>
 </div>
 
 <!-- App Layout -->
@@ -392,6 +540,7 @@ body {
   <div class="sidebar-left" id="sidebarLeft">
     <div class="nav-menu">
       <div class="nav-item active" data-tab="quiz" onclick="navSwitch('quiz')"><span class="nav-icon">📝</span>刷题练习</div>
+      <div class="nav-item" data-tab="chapter" onclick="navSwitch('chapter')"><span class="nav-icon">📚</span>章节练习</div>
       <div class="nav-item" data-tab="exam" onclick="navSwitch('exam')"><span class="nav-icon">📋</span>考试模式</div>
       <div class="nav-item" data-tab="wrong" onclick="navSwitch('wrong')"><span class="nav-icon">❌</span>错题本</div>
       <div class="nav-item" data-tab="fav" onclick="navSwitch('fav')"><span class="nav-icon">⭐</span>收藏夹</div>
@@ -410,8 +559,8 @@ body {
       <select id="selType"><option value="all">全部题型</option></select>
       <select id="selYear"><option value="all">全部年份</option></select>
       <select id="selMode">
-        <option value="random">随机模式</option>
-        <option value="sequential">顺序模式</option>
+        <option value="random">随机练习</option>
+        <option value="sequential" selected>顺序练习</option>
         <option value="wrong">错题重做</option>
         <option value="fav">收藏题目</option>
       </select>
@@ -438,8 +587,37 @@ body {
     </div>
   </div>
 
+  <!-- Chapter View -->
+  <div class="chapter-view" id="chapterView" style="display:none;">
+    <div class="chapter-panel">
+      <div class="chapter-toolbar">
+        <h3>章节练习</h3>
+        <select id="chapterSubject" onchange="renderChapterList()"></select>
+      </div>
+      <div class="chapter-list" id="chapterList"></div>
+    </div>
+  </div>
+
   <!-- Exam View -->
   <div id="examView" style="display:none;flex:1;overflow-y:auto;"></div>
+</div>
+
+<!-- AI Explain Modal -->
+<div class="ai-modal-mask" id="aiModalMask" onclick="handleAiModalMaskClick(event)">
+  <div class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="aiModalTitle">
+    <div class="ai-modal-header">
+      <div class="ai-modal-title" id="aiModalTitle">AI 错题解疑</div>
+      <button class="ai-modal-close" type="button" onclick="closeAiExplainModal()" aria-label="关闭">×</button>
+    </div>
+    <div class="ai-modal-body">
+      <div class="ai-status-chip">基于本题解析生成</div>
+      <div id="aiExplainContent"></div>
+    </div>
+    <div class="ai-modal-footer">
+      <button class="btn btn-outline" type="button" onclick="openAiExplainModal(true)">重新生成</button>
+      <button class="btn btn-primary" type="button" onclick="addAiExplainNote()">加入错题笔记</button>
+    </div>
+  </div>
 </div>
 
 <!-- Calculator -->
@@ -485,15 +663,129 @@ body {
 // ==================== GLOBAL STATE ====================
 let allQuestions = [];
 const TEXT_TYPES = new Set(['计算分析题', '综合题', '简答题']);
+const EXAM_SPECS = {
+  '中级会计实务': [
+    { type: '单选题', label: '单项选择题', count: 10, points: 1.5 },
+    { type: '多选题', label: '多项选择题', count: 10, points: 2 },
+    { type: '判断题', label: '判断题', count: 10, points: 1 },
+    { type: '计算分析题', label: '计算分析题', count: 2, points: [10, 12] },
+    { type: '综合题', label: '综合题', count: 2, points: [15, 18] },
+  ],
+  '中级经济法': [
+    { type: '单选题', label: '单项选择题', count: 30, points: 1 },
+    { type: '多选题', label: '多项选择题', count: 15, points: 2 },
+    { type: '判断题', label: '判断题', count: 10, points: 1 },
+    { type: '简答题', label: '简答题', count: 3, points: 6 },
+    { type: '综合题', label: '综合题', count: 1, points: 12 },
+  ],
+  '中级财务管理': [
+    { type: '单选题', label: '单项选择题', count: 20, points: 1.5 },
+    { type: '多选题', label: '多项选择题', count: 10, points: 2 },
+    { type: '判断题', label: '判断题', count: 10, points: 1 },
+    { type: '计算分析题', label: '计算分析题', count: 3, points: 5 },
+    { type: '综合题', label: '综合题', count: 2, points: [10, 15] },
+  ],
+  '初级会计实务': [
+    { type: '单选题', label: '单项选择题', count: 20, points: 2 },
+    { type: '多选题', label: '多项选择题', count: 10, points: 2 },
+    { type: '判断题', label: '判断题', count: 10, points: 1 },
+    { type: '不定项选择题', label: '不定项选择题', count: 15, points: 2 },
+  ],
+  '经济法基础': [
+    { type: '单选题', label: '单项选择题', count: 23, points: 2 },
+    { type: '多选题', label: '多项选择题', count: 10, points: 2 },
+    { type: '判断题', label: '判断题', count: 10, points: 1 },
+    { type: '不定项选择题', label: '不定项选择题', count: 12, points: 2 },
+  ],
+};
+const EXAM_DISPLAY_NAMES = {
+  '经济法基础': '初级经济法（经济法基础）',
+};
+const CHAPTER_SYLLABUS = {
+  '初级会计实务': [
+    ['第一章 概述', ['会计职能', '会计目标', '会计假设', '会计基础', '会计信息质量']],
+    ['第二章 会计基础', ['会计要素', '会计等式', '借贷记账法', '原始凭证', '记账凭证', '会计账簿', '财产清查']],
+    ['第三章 流动资产', ['货币资金', '应收账款', '预付账款', '存货', '交易性金融资产']],
+    ['第四章 非流动资产', ['固定资产', '无形资产', '长期股权投资', '投资性房地产', '长期待摊费用']],
+    ['第五章 负债', ['短期借款', '应付票据', '应付账款', '应付职工薪酬', '应交税费', '长期借款']],
+    ['第六章 所有者权益', ['实收资本', '资本公积', '盈余公积', '未分配利润', '留存收益']],
+    ['第七章 收入、费用和利润', ['收入', '费用', '利润', '合同负债', '营业外收入', '所得税费用']],
+    ['第八章 财务报告', ['资产负债表', '利润表', '现金流量表', '所有者权益变动表', '附注']],
+    ['第九章 产品成本核算', ['成本核算', '生产费用', '完工产品', '在产品', '辅助生产费用']],
+    ['第十章 政府会计基础', ['政府会计', '预算会计', '事业单位', '财政拨款', '净资产']],
+  ],
+  '经济法基础': [
+    ['第一章 总论', ['法律关系', '法律事实', '法律责任', '法的形式', '仲裁', '民事诉讼', '行政复议', '行政诉讼']],
+    ['第二章 会计法律制度', ['会计核算', '会计监督', '会计档案', '会计机构', '会计人员']],
+    ['第三章 支付结算法律制度', ['支付结算', '票据', '银行结算账户', '银行卡', '汇票', '支票']],
+    ['第四章 税法概述及货物和劳务税法律制度', ['增值税', '消费税', '关税', '城市维护建设税', '车辆购置税']],
+    ['第五章 所得税法律制度', ['企业所得税', '个人所得税', '应纳税所得额', '税收优惠']],
+    ['第六章 财产和行为税法律制度', ['房产税', '契税', '车船税', '印花税', '资源税', '土地增值税', '城镇土地使用税']],
+    ['第七章 税收征管法律制度', ['税务登记', '纳税申报', '税款征收', '税务检查', '税务行政复议']],
+    ['第八章 劳动合同与社会保险法律制度', ['劳动合同', '劳动报酬', '劳动争议', '社会保险', '基本养老保险', '医疗保险']],
+  ],
+  '中级会计实务': [
+    ['第一章 总论', ['会计信息质量', '会计要素', '会计计量', '财务报告目标']],
+    ['第二章 存货', ['存货', '原材料', '可变现净值', '存货跌价准备']],
+    ['第三章 固定资产', ['固定资产', '折旧', '在建工程', '弃置费用']],
+    ['第四章 无形资产', ['无形资产', '研发支出', '摊销', '开发阶段']],
+    ['第五章 投资性房地产', ['投资性房地产', '成本模式', '公允价值模式']],
+    ['第六章 长期股权投资和合营安排', ['长期股权投资', '权益法', '成本法', '合营安排']],
+    ['第七章 资产减值', ['资产减值', '可收回金额', '减值损失', '资产组']],
+    ['第八章 金融资产和金融负债', ['金融资产', '金融负债', '摊余成本', '交易性金融资产', '其他权益工具投资']],
+    ['第九章 职工薪酬', ['职工薪酬', '短期薪酬', '离职后福利', '辞退福利']],
+    ['第十章 股份支付', ['股份支付', '权益结算', '现金结算', '股票期权']],
+    ['第十一章 借款费用', ['借款费用', '资本化', '专门借款', '一般借款']],
+    ['第十二章 或有事项', ['或有事项', '预计负债', '亏损合同', '重组义务']],
+    ['第十三章 收入', ['收入', '履约义务', '交易价格', '合同资产', '合同负债']],
+    ['第十四章 政府补助', ['政府补助', '递延收益', '总额法', '净额法']],
+    ['第十五章 非货币性资产交换', ['非货币性资产交换', '换入资产', '补价']],
+    ['第十六章 债务重组', ['债务重组', '债务人', '债权人', '资产清偿债务']],
+    ['第十七章 所得税', ['所得税', '递延所得税资产', '递延所得税负债', '暂时性差异']],
+    ['第十八章 外币折算', ['外币', '汇率', '外币财务报表折算', '记账本位币']],
+    ['第十九章 租赁', ['租赁', '使用权资产', '租赁负债', '承租人', '出租人']],
+    ['第二十章 持有待售的非流动资产、处置组和终止经营', ['持有待售', '处置组', '终止经营']],
+    ['第二十一章 企业合并与合并财务报表', ['企业合并', '合并财务报表', '少数股东权益', '抵销分录']],
+    ['第二十二章 会计政策、会计估计变更和差错更正', ['会计政策变更', '会计估计变更', '差错更正', '追溯调整']],
+    ['第二十三章 资产负债表日后事项', ['资产负债表日后事项', '调整事项', '非调整事项']],
+    ['第二十四章 公允价值计量', ['公允价值', '估值技术', '输入值']],
+    ['第二十五章 政府会计', ['政府会计', '预算会计', '财政拨款', '事业单位']],
+  ],
+  '中级经济法': [
+    ['第一章 总论', ['法律行为', '代理', '仲裁', '民事诉讼', '行政复议']],
+    ['第二章 公司法律制度', ['公司', '股东', '董事会', '监事会', '股权转让']],
+    ['第三章 合伙企业法律制度', ['合伙企业', '普通合伙人', '有限合伙人', '合伙协议']],
+    ['第四章 物权法律制度', ['物权', '所有权', '担保物权', '抵押', '质押', '留置']],
+    ['第五章 合同法律制度', ['合同', '要约', '承诺', '违约责任', '买卖合同', '租赁合同']],
+    ['第六章 金融法律制度', ['票据', '证券', '保险', '信托', '汇票', '本票', '支票']],
+    ['第七章 财政法律制度', ['预算', '国有资产', '政府采购', '财政监督']],
+  ],
+  '中级财务管理': [
+    ['第一章 总论', ['财务管理目标', '利益冲突', '金融环境', '经济环境']],
+    ['第二章 财务管理基础', ['货币时间价值', '风险与收益', '成本性态', '资本资产定价']],
+    ['第三章 预算管理', ['预算', '经营预算', '专门决策预算', '资金预算']],
+    ['第四章 筹资管理（上）', ['筹资', '债务筹资', '股权筹资', '融资租赁']],
+    ['第五章 筹资管理（下）', ['资本成本', '杠杆', '资本结构', '每股收益无差别点']],
+    ['第六章 投资管理', ['投资项目', '净现值', '内含收益率', '回收期', '年金净流量']],
+    ['第七章 营运资金管理', ['现金管理', '应收账款', '存货管理', '流动负债']],
+    ['第八章 成本管理', ['本量利分析', '标准成本', '作业成本', '责任成本']],
+    ['第九章 收入与分配管理', ['销售预测', '定价', '股利政策', '利润分配']],
+    ['第十章 财务分析与评价', ['财务分析', '偿债能力', '营运能力', '盈利能力', '杜邦分析']],
+  ],
+};
 let wrongSet = new Set();
 let favSet = new Set();
 let answeredSet = new Set();
 let currentMode = 'quiz';
+let activeChapterPractice = null;
 
 // Quiz state
 let filteredQuestions = [];
 let currentIndex = -1;
 let selectedOptions = new Set();
+let answerSheetPage = 0;
+const ANSWER_SHEET_PAGE_SIZE = 30;
+let lastUserAnswer = '';
 
 // Exam state
 let examQuestions = [];
@@ -504,11 +796,12 @@ let examSeconds = 0;
 let examSubmitted = false;
 
 // ==================== LOAD ====================
-fetch('questions.json')
+fetch(`questions.json?v=${Date.now()}`, { cache: 'no-store' })
   .then(r => r.json())
   .then(data => {
     allQuestions = data.filter(q => q.has_answer);
     initQuizFilters();
+    initChapterPractice();
     initExamConfig();
     applyFilters();
     updateTopBar();
@@ -533,22 +826,32 @@ function navSwitch(tab) {
   if (navEl) navEl.classList.add('active');
 
   const quizView = document.getElementById('quizView');
+  const chapterView = document.getElementById('chapterView');
   const examView = document.getElementById('examView');
   const answerSheet = document.getElementById('answerSheet');
 
   if (tab === 'exam') {
     quizView.style.display = 'none';
+    chapterView.style.display = 'none';
     examView.style.display = '';
     if (answerSheet) answerSheet.style.display = 'none';
     initExamConfig();
+  } else if (tab === 'chapter') {
+    quizView.style.display = 'none';
+    chapterView.style.display = '';
+    examView.style.display = 'none';
+    if (answerSheet) answerSheet.style.display = 'none';
+    renderChapterList();
   } else {
     quizView.style.display = '';
+    chapterView.style.display = 'none';
     examView.style.display = 'none';
     if (answerSheet) answerSheet.style.display = '';
     // Set filter mode for wrong/fav
+    if (tab !== 'quiz') activeChapterPractice = null;
     if (tab === 'wrong') { document.getElementById('selMode').value = 'wrong'; applyFilters(); }
     else if (tab === 'fav') { document.getElementById('selMode').value = 'fav'; applyFilters(); }
-    else if (tab === 'quiz') { document.getElementById('selMode').value = 'random'; applyFilters(); }
+    else if (tab === 'quiz') { activeChapterPractice = null; document.getElementById('selMode').value = 'sequential'; applyFilters(); }
     // stats tab just shows quiz with stats highlight
   }
   updateTopBar();
@@ -570,9 +873,30 @@ function updateAnswerSheet() {
   const grid = document.getElementById('asGrid');
   if (!grid) return;
   const total = filteredQuestions.length;
+  const sheet = grid.closest('.answer-sheet');
   grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+
+  if (total === 0) {
+    answerSheetPage = 0;
+    if (sheet) {
+      sheet.querySelector('.as-range')?.remove();
+      sheet.querySelector('.as-pager')?.remove();
+    }
+    grid.innerHTML = '<span style="font-size:12px;color:var(--text-muted);">暂无题目</span>';
+    updateStatsPanel();
+    return;
+  }
+
+  const totalPages = Math.ceil(total / ANSWER_SHEET_PAGE_SIZE);
+  if (currentIndex >= 0 && !sheet?.dataset.manualPage) {
+    answerSheetPage = Math.floor(currentIndex / ANSWER_SHEET_PAGE_SIZE);
+  }
+  answerSheetPage = Math.max(0, Math.min(answerSheetPage, totalPages - 1));
+
+  const start = answerSheetPage * ANSWER_SHEET_PAGE_SIZE;
+  const end = Math.min(start + ANSWER_SHEET_PAGE_SIZE, total);
   let html = '';
-  for (let i = 0; i < total; i++) {
+  for (let i = start; i < end; i++) {
     const q = filteredQuestions[i];
     let cls = 'as-dot';
     if (q.type && TEXT_TYPES.has(q.type)) cls += ' text-type';
@@ -582,8 +906,43 @@ function updateAnswerSheet() {
     else if (answeredSet.has(qid)) cls += ' correct';
     html += `<span class="${cls}" onclick="goToQuestion(${i})">${i+1}</span>`;
   }
-  grid.innerHTML = html || '<span style="font-size:12px;color:var(--text-muted);">暂无题目</span>';
+  grid.innerHTML = html;
+
+  if (sheet) {
+    let range = sheet.querySelector('.as-range');
+    if (!range) {
+      range = document.createElement('div');
+      range.className = 'as-range';
+      grid.before(range);
+    }
+    range.textContent = `显示 ${start + 1}-${end} / 共 ${total} 题`;
+
+    let pager = sheet.querySelector('.as-pager');
+    if (!pager) {
+      pager = document.createElement('div');
+      pager.className = 'as-pager';
+      grid.after(pager);
+    }
+    pager.innerHTML = `
+      <button class="as-page-btn" onclick="changeAnswerSheetPage(-1)" ${answerSheetPage === 0 ? 'disabled' : ''}>上一组</button>
+      <span class="as-page-info">${answerSheetPage + 1}/${totalPages}</span>
+      <button class="as-page-btn" onclick="changeAnswerSheetPage(1)" ${answerSheetPage >= totalPages - 1 ? 'disabled' : ''}>下一组</button>`;
+  }
   updateStatsPanel();
+}
+
+function syncAnswerSheetToCurrentQuestion() {
+  const sheet = document.getElementById('asGrid')?.closest('.answer-sheet');
+  if (sheet) delete sheet.dataset.manualPage;
+}
+
+function changeAnswerSheetPage(delta) {
+  const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / ANSWER_SHEET_PAGE_SIZE));
+  answerSheetPage = Math.max(0, Math.min(answerSheetPage + delta, totalPages - 1));
+  const grid = document.getElementById('asGrid');
+  const sheet = grid?.closest('.answer-sheet');
+  if (sheet) sheet.dataset.manualPage = '1';
+  updateAnswerSheet();
 }
 
 function updateStatsPanel() {
@@ -599,6 +958,7 @@ function updateStatsPanel() {
 function goToQuestion(i) {
   currentIndex = i;
   selectedOptions.clear();
+  syncAnswerSheetToCurrentQuestion();
   renderQuestion(filteredQuestions[currentIndex]);
   updateAnswerSheet();
 }
@@ -647,6 +1007,79 @@ function updateCategories() {
   cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; selC.appendChild(o); });
 }
 
+function initChapterPractice() {
+  const sel = document.getElementById('chapterSubject');
+  if (!sel) return;
+  sel.innerHTML = '';
+  Object.keys(CHAPTER_SYLLABUS)
+    .filter(cat => allQuestions.some(q => q.category === cat))
+    .forEach(cat => {
+      const o = document.createElement('option');
+      o.value = cat;
+      o.textContent = EXAM_DISPLAY_NAMES[cat] || cat;
+      sel.appendChild(o);
+    });
+  renderChapterList();
+}
+
+function getChapterItems(category) {
+  return (CHAPTER_SYLLABUS[category] || []).map((item, index) => ({
+    key: `${category}::${index}`,
+    category,
+    index,
+    title: item[0],
+    keywords: item[1] || [],
+  }));
+}
+
+function questionMatchesChapter(q, chapter) {
+  if (!q || !chapter) return false;
+  if (q.chapter && String(q.chapter) === chapter.title) return true;
+  const haystack = `${q.question || ''} ${q.explanation || ''} ${(q.options || []).join(' ')}`;
+  return chapter.keywords.some(k => haystack.includes(k));
+}
+
+function countChapterQuestions(category, chapter) {
+  return allQuestions.filter(q => q.category === category && questionMatchesChapter(q, chapter)).length;
+}
+
+function renderChapterList() {
+  const sel = document.getElementById('chapterSubject');
+  const list = document.getElementById('chapterList');
+  if (!sel || !list) return;
+  const category = sel.value || Object.keys(CHAPTER_SYLLABUS)[0];
+  const chapters = getChapterItems(category);
+  if (!chapters.length) {
+    list.innerHTML = '<div class="empty"><div class="icon">📚</div>暂无章节配置</div>';
+    return;
+  }
+  list.innerHTML = chapters.map(ch => {
+    const count = countChapterQuestions(category, ch);
+    const tags = ch.keywords.slice(0, 4).map(k => `<span class="chapter-tag">${escapeHtml(k)}</span>`).join('');
+    return `<div class="chapter-card">
+      <div class="chapter-name">${escapeHtml(ch.title)}</div>
+      <div class="chapter-meta">${count} 道匹配题目</div>
+      <div class="chapter-tags">${tags}</div>
+      <button class="btn btn-primary" onclick="startChapterPractice('${ch.key}')">开始练习</button>
+    </div>`;
+  }).join('');
+}
+
+function startChapterPractice(chapterKey) {
+  const [category, indexText] = chapterKey.split('::');
+  const chapter = getChapterItems(category)[Number(indexText)];
+  if (!chapter) return;
+  navSwitch('quiz');
+  activeChapterPractice = chapter;
+  document.getElementById('selSubject').value = 'all';
+  updateCategories();
+  document.getElementById('selCategory').value = category;
+  document.getElementById('selType').value = 'all';
+  document.getElementById('selYear').value = 'all';
+  document.getElementById('selMode').value = 'sequential';
+  applyFilters();
+}
+
 function applyFilters() {
   const subject = document.getElementById('selSubject').value;
   const category = document.getElementById('selCategory').value;
@@ -664,14 +1097,19 @@ function applyFilters() {
 
   if (mode === 'wrong') filteredQuestions = filteredQuestions.filter(q => wrongSet.has(q.id));
   if (mode === 'fav') filteredQuestions = filteredQuestions.filter(q => favSet.has(q.id));
+  if (activeChapterPractice) {
+    filteredQuestions = filteredQuestions.filter(q => questionMatchesChapter(q, activeChapterPractice));
+  }
   if (mode === 'random') filteredQuestions = [...filteredQuestions].sort(() => Math.random() - 0.5);
 
   currentIndex = -1;
+  answerSheetPage = 0;
+  syncAnswerSheetToCurrentQuestion();
   updateTopBar();
   if (filteredQuestions.length > 0) nextQuestion();
   else {
     document.getElementById('questionArea').innerHTML = '<div class="empty"><div class="icon">📭</div>没有匹配的题目</div>';
-    document.getElementById('asGrid').innerHTML = '';
+    updateAnswerSheet();
   }
 }
 
@@ -682,6 +1120,8 @@ function nextQuestion() {
   }
   currentIndex = (currentIndex + 1) % filteredQuestions.length;
   selectedOptions.clear();
+  lastUserAnswer = '';
+  syncAnswerSheetToCurrentQuestion();
   renderQuestion(filteredQuestions[currentIndex]);
   updateAnswerSheet();
   document.getElementById('questionScroll').scrollTop = 0;
@@ -723,16 +1163,18 @@ function renderQuestion(q) {
   if (!isTextType) {
     html += `<div class="answer-box" id="answerBox"><div class="ans-title" id="resultText"></div><div class="ans-exp" id="expText"></div></div>
       <div class="action-bar">
-        <button class="btn btn-outline" onclick="prevQuestion()">← 上一题</button>
-        <button class="btn btn-purple" onclick="checkAnswer('${q.answer}',${isMulti?'1':'0'})">确认答案</button>
-        <button class="btn btn-primary" onclick="nextQuestion()">下一题 →</button>
+        <button class="btn btn-outline" onclick="prevQuestion()">上一题</button>
+        <button class="btn btn-purple" onclick="checkAnswer('${q.answer}',${isMulti?'1':'0'})">提交答案</button>
+        <button class="btn btn-ai" onclick="openAiExplainModal()">AI 解疑</button>
+        <button class="btn btn-primary" onclick="nextQuestion()">下一题</button>
         <button class="btn-mark${marked?' active':''}" id="btnMark" onclick="toggleFavorite(${q.id})" title="${marked?'取消收藏':'收藏'}">${marked?'★':'☆'}</button>
       </div>`;
   } else {
     html += `<div class="answer-box" id="answerBox"><div class="ans-title" id="resultText"></div><div class="ans-exp" id="expText"></div></div>
       <div class="action-bar">
-        <button class="btn btn-outline" onclick="prevQuestion()">← 上一题</button>
-        <button class="btn btn-primary" onclick="nextQuestion()">下一题 →</button>
+        <button class="btn btn-outline" onclick="prevQuestion()">上一题</button>
+        <button class="btn btn-ai" onclick="openAiExplainModal()">AI 解疑</button>
+        <button class="btn btn-primary" onclick="nextQuestion()">下一题</button>
         <button class="btn-mark${marked?' active':''}" id="btnMark" onclick="toggleFavorite(${q.id})" title="${marked?'取消收藏':'收藏'}">${marked?'★':'☆'}</button>
       </div>`;
   }
@@ -746,12 +1188,14 @@ function selectQuizOption(el, label, isMultiFlag) {
   if (!isMulti) { document.querySelectorAll('.option').forEach(o => o.classList.remove('selected')); selectedOptions.clear(); }
   el.classList.toggle('selected');
   el.classList.contains('selected') ? selectedOptions.add(label) : selectedOptions.delete(label);
+  lastUserAnswer = [...selectedOptions].sort().join('');
 }
 
 function checkAnswer(correctAnswer, isMultiFlag) {
   const isMulti = isMultiFlag === '1';
   if (selectedOptions.size === 0) return;
   const userAnswer = [...selectedOptions].sort().join('');
+  lastUserAnswer = userAnswer;
   const correct = correctAnswer.toUpperCase();
   const isCorrect = userAnswer === correct;
   document.querySelectorAll('.option').forEach(opt => {
@@ -774,6 +1218,7 @@ function showTextAnswer() {
   const textarea = document.getElementById('textAnswer');
   if (!textarea) return;
   const userAnswer = textarea.value.trim();
+  lastUserAnswer = userAnswer;
   const q = filteredQuestions[currentIndex];
   const box = document.getElementById('answerBox');
   box.classList.add('show', 'neutral');
@@ -784,20 +1229,111 @@ function showTextAnswer() {
   updateAnswerSheet();
 }
 
+function openAiExplainModal(regenerate = false) {
+  const q = filteredQuestions[currentIndex];
+  if (!q) return;
+  const content = document.getElementById('aiExplainContent');
+  const mask = document.getElementById('aiModalMask');
+  if (!content || !mask) return;
+  content.innerHTML = buildLocalAiExplanation(q, regenerate);
+  mask.classList.add('visible');
+}
+
+function closeAiExplainModal() {
+  const mask = document.getElementById('aiModalMask');
+  if (mask) mask.classList.remove('visible');
+}
+
+function handleAiModalMaskClick(event) {
+  if (event.target && event.target.id === 'aiModalMask') closeAiExplainModal();
+}
+
+function buildLocalAiExplanation(q, regenerate = false) {
+  const answer = String(q.answer || '暂无').toUpperCase();
+  const userAnswer = lastUserAnswer || getCurrentSelectedAnswer() || '未作答';
+  const userAnswerText = getAnswerDisplayText(q, userAnswer);
+  const correctAnswerText = getAnswerDisplayText(q, answer);
+  const explanation = q.explanation || '这道题暂时没有原始解析，后续接入大模型后可根据题干和答案生成更完整的讲解。';
+  const focus = q.category || q.subject || '本题考点';
+  const variantText = regenerate ? '这次换一种角度看：' : '';
+
+  return `
+    <div class="ai-section">
+      <h4>为什么选错</h4>
+      <p>${variantText}你的答案是 <strong>${escapeHtml(userAnswerText)}</strong>，正确答案是 <strong>${escapeHtml(correctAnswerText)}</strong>。如果两者不一致，通常说明题干中的限制条件、会计处理时点或关键词没有抓准。</p>
+    </div>
+    <div class="ai-section">
+      <h4>正确思路</h4>
+      <p>先判断题目问的是确认、计量、列报还是处理分录，再回到题干找触发条件。对于选择题，优先排除与题干条件明显冲突的选项，再对照正确答案。</p>
+    </div>
+    <div class="ai-section">
+      <h4>考点拆解</h4>
+      <p>本题关联 <strong>${escapeHtml(focus)}</strong>。原解析提示：${escapeHtml(explanation)}</p>
+    </div>
+    <div class="ai-section">
+      <h4>记忆提醒</h4>
+      <p>做这类题时先圈出“时间点、责任归属、是否满足确认条件、金额是否可靠”这几个词，再判断选项。不要只看选项熟不熟，要看它是否完全匹配题干。</p>
+    </div>`;
+}
+
+function getCurrentSelectedAnswer() {
+  const textAnswer = document.getElementById('textAnswer');
+  if (textAnswer && textAnswer.value.trim()) return textAnswer.value.trim();
+  return [...selectedOptions].sort().join('');
+}
+
+function getAnswerDisplayText(q, answer) {
+  if (!answer || answer === '未作答') return '未作答';
+  if (q.type === '判断题') return answer;
+  if (TEXT_TYPES.has(q.type)) return answer;
+  const labels = ['A','B','C','D','E'];
+  const parts = String(answer).split('').map(label => {
+    const idx = labels.indexOf(label);
+    return idx >= 0 && q.options && q.options[idx] ? `${label}. ${q.options[idx]}` : label;
+  });
+  return parts.join('；');
+}
+
+function addAiExplainNote() {
+  const q = filteredQuestions[currentIndex];
+  if (q && q.id) {
+    favSet.add(q.id);
+    try { localStorage.setItem('favSet', JSON.stringify([...favSet])); } catch(e) {}
+    const el = document.getElementById('btnMark');
+    if (el) {
+      el.classList.add('active');
+      el.textContent = '★';
+      el.title = '取消收藏';
+    }
+  }
+  alert('已加入收藏夹，后续可扩展为独立错题笔记。');
+}
+
+document.addEventListener('keydown', function(e) {
+  const mask = document.getElementById('aiModalMask');
+  if (e.key === 'Escape' && mask && mask.classList.contains('visible')) {
+    e.preventDefault();
+    closeAiExplainModal();
+  }
+});
+
 function prevQuestion() {
   if (currentIndex > 0) {
     currentIndex--;
     selectedOptions.clear();
+    lastUserAnswer = '';
+    syncAnswerSheetToCurrentQuestion();
     renderQuestion(filteredQuestions[currentIndex]);
     updateAnswerSheet();
   }
 }
 
 function resetFilters() {
+  activeChapterPractice = null;
   document.getElementById('selSubject').value = 'all';
   document.getElementById('selType').value = 'all';
   document.getElementById('selYear').value = 'all';
-  document.getElementById('selMode').value = 'random';
+  document.getElementById('selMode').value = 'sequential';
   updateCategories();
   applyFilters();
 }
@@ -840,19 +1376,23 @@ function toggleTheme() {
   alert('主题切换功能开发中...');
 }
 
+function login() {
+  alert('登录功能开发中...');
+}
+
 // ==================== EXAM MODE ====================
 function initExamConfig() {
   if (document.getElementById('examView').dataset.state === 'started') return;
   if (examSubmitted) { showExamResult(); return; }
 
   document.getElementById('examView').dataset.state = 'config';
-  const cats = [...new Set(allQuestions.map(q => q.category))].sort();
+  const cats = Object.keys(EXAM_SPECS).filter(cat => allQuestions.some(q => q.category === cat));
   const years = [...new Set(allQuestions.map(q => q.year).filter(Boolean))].sort((a,b)=>b-a);
 
   let html = `<div class="exam-config"><h3>📋 选择考试科目</h3>
     <div class="row">
       <select id="examCat" onchange="updateExamInfo()"><option value="">-- 选择科目 --</option>`;
-  cats.forEach(c => { html += `<option value="${c}">${c}</option>`; });
+  cats.forEach(c => { html += `<option value="${c}">${EXAM_DISPLAY_NAMES[c] || c}</option>`; });
   html += `</select>
       <select id="examYear" onchange="updateExamInfo()"><option value="">-- 选择年份 --</option>`;
   years.forEach(y => { html += `<option value="${y}">${y}年</option>`; });
@@ -870,104 +1410,41 @@ function updateExamInfo() {
 
   if (!cat || !year) { info.textContent = ''; btn.disabled = true; return; }
 
+  const spec = EXAM_SPECS[cat];
   const pool = allQuestions.filter(q => q.category === cat && q.year == year);
+  const allCatPool = allQuestions.filter(q => q.category === cat);
   const types = {};
   pool.forEach(q => { types[q.type] = (types[q.type]||0) + 1; });
+  const allTypes = {};
+  allCatPool.forEach(q => { allTypes[q.type] = (allTypes[q.type]||0) + 1; });
 
   if (pool.length === 0) { info.textContent = '该科目+年份没有可用题目'; btn.disabled = true; return; }
 
-  if (cat === '中级财务管理') {
-    const single = types['单选题'] || 0;
-    const multi = types['多选题'] || 0;
-    const judge = types['判断题'] || 0;
-    const calc = types['计算分析题'] || 0;
-    const comp = types['综合题'] || 0;
-    const canFull = single >= 20 && multi >= 10 && judge >= 10 && calc >= 3 && comp >= 2;
-    info.innerHTML = `题库: 单选${single} 多选${multi} 判断${judge} 计算分析${calc} 综合${comp}<br>
-      ${canFull ? '✅ 可组成完整试卷 (单选20+多选10+判断10+计算分析3+综合2)' : '⚠ 题库不足，将自动调整题目数量'}`;
-    btn.disabled = single === 0 && multi === 0 && judge === 0 && calc === 0 && comp === 0;
-  } else {
-    const singleCount = types['单选题'] || 0;
-    const multiCount = types['多选题'] || 0;
-    const judgeCount = types['判断题'] || 0;
-    const budingCount = types['不定项选择题'] || 0;
-    const maxRaw = singleCount*2 + multiCount*2 + judgeCount*1 + budingCount*2;
-    const canFull = maxRaw >= 100;
+  if (!spec) { info.textContent = '该科目暂未配置考试规则'; btn.disabled = true; return; }
 
-    info.innerHTML = `题库: 单选${singleCount} 多选${multiCount} 判断${judgeCount} 不定项${budingCount}<br>
-      ${canFull ? '✅ 可组成100分试卷 (单选/多选/不定项各2分 判断1分)' : `⚠ 题库最多${maxRaw}分，将自动调整分值到100分`}`;
-    btn.disabled = false;
-  }
+  const rows = spec.map(item => {
+    const sameYear = types[item.type] || 0;
+    const totalAvailable = allTypes[item.type] || 0;
+    const ok = totalAvailable >= item.count;
+    return `${item.label}${sameYear}/${item.count}${sameYear < item.count ? `（同科可补${Math.max(0, totalAvailable - sameYear)}）` : ''}${ok ? '' : ' 不足'}`;
+  });
+  const canBuild = spec.every(item => (allTypes[item.type] || 0) > 0);
+  const fullSameYear = spec.every(item => (types[item.type] || 0) >= item.count);
+  info.innerHTML = `题库: ${rows.join('，')}<br>
+    ${fullSameYear ? '✅ 可按本年份组成100分完整试卷' : '⚠ 当前年份题型不足，将从同科其他年份补题并保持100分'}`;
+  btn.disabled = !canBuild;
 }
 
 function startExam() {
   const cat = document.getElementById('examCat').value;
   const year = document.getElementById('examYear').value;
 
-  const pool = allQuestions.filter(q => q.category === cat && q.year == year);
-  const singles = pool.filter(q => q.type === '单选题');
-  const multis = pool.filter(q => q.type === '多选题');
-  const judges = pool.filter(q => q.type === '判断题');
-  const calc = pool.filter(q => q.type === '计算分析题');
-  const comp = pool.filter(q => q.type === '综合题');
-
   examQuestions = [];
+  examQuestions = buildExamQuestions(cat, Number(year));
 
-  if (cat === '中级财务管理') {
-    examQuestions.push(...singles.slice(0, 20).map(q => ({...q, point: 2})));
-    examQuestions.push(...multis.slice(0, 10).map(q => ({...q, point: 2})));
-    examQuestions.push(...judges.slice(0, 10).map(q => ({...q, point: 1})));
-    examQuestions.push(...calc.slice(0, 3).map(q => ({...q, point: 6})));
-    examQuestions.push(...comp.slice(0, 2).map(q => ({...q, point: 6})));
-
-    const totalPts = examQuestions.reduce((s,q) => s + q.point, 0);
-    if (totalPts !== 100 && totalPts > 0) {
-      const scale = 100 / totalPts;
-      examQuestions.forEach(q => { q.point = Math.round(q.point * scale); });
-      let sum2 = examQuestions.reduce((s,q) => s + q.point, 0);
-      for (let i = 0; i < examQuestions.length && sum2 < 100; i++) { examQuestions[i].point += 1; sum2 += 1; }
-      for (let i = 0; i < examQuestions.length && sum2 > 100; i++) { examQuestions[i].point -= 1; sum2 -= 1; }
-    }
-  } else {
-    const buding = pool.filter(q => q.type === '不定项选择题');
-    let rawPts = 0;
-
-    const singleNeeded = Math.min(singles.length, Math.max(0, 20));
-    examQuestions.push(...singles.slice(0, singleNeeded).map(q => ({...q, basePoint: 2})));
-    rawPts += singleNeeded * 2;
-
-    const multiTake = Math.min(10, multis.length);
-    examQuestions.push(...multis.slice(0, multiTake).map(q => ({...q, basePoint: 2})));
-    rawPts += multiTake * 2;
-
-    const judgeTake = Math.min(10, judges.length);
-    examQuestions.push(...judges.slice(0, judgeTake).map(q => ({...q, basePoint: 1})));
-    rawPts += judgeTake * 1;
-
-    const budingTake = Math.min(15, buding.length);
-    examQuestions.push(...buding.slice(0, budingTake).map(q => ({...q, basePoint: 2})));
-    rawPts += budingTake * 2;
-
-    if (rawPts < 100) {
-      const extraSingles = Math.min(singles.length - singleNeeded, Math.ceil((100 - rawPts) / 2));
-      examQuestions.push(...singles.slice(singleNeeded, singleNeeded + extraSingles).map(q => ({...q, basePoint: 2})));
-      rawPts += extraSingles * 2;
-    }
-
-    if (rawPts < 100 && multiTake < multis.length) {
-      const extra = Math.min(multis.length - multiTake, Math.ceil((100 - rawPts) / 2));
-      examQuestions.push(...multis.slice(multiTake, multiTake + extra).map(q => ({...q, basePoint: 2})));
-      rawPts += extra * 2;
-    }
-
-    const scale = 100 / rawPts;
-    examQuestions.forEach(q => { q.point = Math.floor(q.basePoint * scale); });
-
-    let sum = examQuestions.reduce((s,q) => s + q.point, 0);
-    for (let i = 0; i < examQuestions.length && sum < 100; i++) {
-      examQuestions[i].point += 1;
-      sum += 1;
-    }
+  if (examQuestions.length === 0) {
+    alert('该科目题库不足，暂时无法组卷。');
+    return;
   }
 
   examAnswers = {};
@@ -982,6 +1459,67 @@ function startExam() {
   examTimer = setInterval(() => { examSeconds++; updateExamTimer(); }, 1000);
 
   renderExamQuestion();
+}
+
+function buildExamQuestions(cat, year) {
+  const spec = EXAM_SPECS[cat];
+  if (!spec) return [];
+
+  const chosenIds = new Set();
+  const result = [];
+
+  spec.forEach(item => {
+    const sameYear = allQuestions.filter(q => q.category === cat && q.year == year && q.type === item.type);
+    const otherYears = allQuestions.filter(q => q.category === cat && q.year != year && q.type === item.type);
+    const candidates = [...sameYear, ...otherYears];
+    const points = Array.isArray(item.points)
+      ? item.points.slice(0, item.count)
+      : Array.from({ length: item.count }, () => item.points);
+
+    let taken = 0;
+    for (const q of candidates) {
+      if (taken >= item.count) break;
+      if (chosenIds.has(q.id)) continue;
+      chosenIds.add(q.id);
+      result.push({
+        ...q,
+        point: points[taken] ?? points[points.length - 1] ?? item.points,
+        examTypeLabel: item.label,
+        fromFallbackYear: q.year != year,
+      });
+      taken++;
+    }
+  });
+
+  normalizeExamTotal(result);
+  return result;
+}
+
+function normalizeExamTotal(questions) {
+  const total = questions.reduce((s, q) => s + Number(q.point || 0), 0);
+  if (!questions.length || Math.abs(total - 100) < 0.001) return;
+
+  const scale = 100 / total;
+  questions.forEach(q => {
+    q.point = Math.max(0.5, Math.round(Number(q.point || 0) * scale * 2) / 2);
+  });
+
+  let adjusted = questions.reduce((s, q) => s + Number(q.point || 0), 0);
+  let i = 0;
+  while (Math.abs(adjusted - 100) >= 0.001 && questions.length && i < 1000) {
+    const q = questions[i % questions.length];
+    const step = adjusted < 100 ? 0.5 : -0.5;
+    if (q.point + step >= 0.5) {
+      q.point = Math.round((q.point + step) * 2) / 2;
+      adjusted = Math.round((adjusted + step) * 2) / 2;
+    }
+    i++;
+  }
+}
+
+function formatScore(score) {
+  const n = Number(score || 0);
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
 }
 
 function updateExamTimer() {
@@ -1034,7 +1572,7 @@ function renderExamQuestion() {
   else if (isTextType) typeTagClass = 'type-text';
 
   const html = `
-    <div class="stats"><span class="stat-chip">${q.category} ${q.year}年</span><span class="stat-chip">${q.type} ${q.point}分</span><span class="timer-chip" id="examTimer">⏱ 00:00</span><span class="stat-chip">总分 ${totalPts}分</span></div>
+    <div class="stats"><span class="stat-chip">${q.category} ${q.year}年${q.fromFallbackYear ? '（补题）' : ''}</span><span class="stat-chip">${q.type} ${formatScore(q.point)}分</span><span class="timer-chip" id="examTimer">⏱ 00:00</span><span class="stat-chip">总分 ${totalPts}分</span></div>
     <div class="exam-layout">
       <div class="exam-sidebar"><div class="sidebar-title">答题卡</div>${dots}</div>
       <div class="exam-main">
@@ -1042,7 +1580,7 @@ function renderExamQuestion() {
           <div class="q-meta">
             <span class="tag">第${examCurrentIdx+1}/${total}题</span>
             <span class="tag ${typeTagClass}">${q.type}</span>
-            <span class="tag">${q.point}分</span>
+            <span class="tag">${formatScore(q.point)}分</span>
           </div>
           <div class="q-body">${formatQuestionText(q)}</div>
           <div class="options">${optionsHtml}</div>
@@ -1134,7 +1672,7 @@ function showExamResult() {
 
   let html = `<div class="result-card">
     <h3>📋 考试成绩</h3>
-    <div class="score ${passed?'':'fail'}">${totalScore}<span style="font-size:20px">分</span></div>
+    <div class="score ${passed?'':'fail'}">${formatScore(totalScore)}<span style="font-size:20px">分</span></div>
     <div class="breakdown">
       ${passed ? '✅ 及格 (60分以上)' : '❌ 未及格 (60分以下)'}<br>
       用时: ${m}分${s}秒 | 答对: ${results.filter(r=>r.isCorrect).length}题 | 答错: ${wrongOnes.length}题
@@ -1149,7 +1687,7 @@ function showExamResult() {
     textQuestions.forEach((q, i) => {
       const origIdx = results.indexOf(q);
       html += `<div class="card" style="text-align:left;">
-        <div class="q-meta"><span class="tag type-text">${q.type}</span><span class="tag">${q.point}分</span></div>
+        <div class="q-meta"><span class="tag type-text">${q.type}</span><span class="tag">${formatScore(q.point)}分</span></div>
         <div class="q-body">${formatQuestionText(q)}</div>
         <div style="background:#F1F5F9;padding:12px;border-radius:8px;margin:8px 0;">
           <strong>你的答案:</strong><pre>${escapeHtml(q.userAns || '(未作答)')}</pre>
@@ -1158,7 +1696,7 @@ function showExamResult() {
           <strong>参考答案:</strong><pre>${escapeHtml(q.answer || '')}</pre>
         </div>
         <div class="self-grade-btns">
-          <button onclick="selfGradeText(this, ${origIdx}, true, ${q.point})">我答对了 +${q.point}分</button>
+          <button onclick="selfGradeText(this, ${origIdx}, true, ${q.point})">我答对了 +${formatScore(q.point)}分</button>
           <button onclick="selfGradeText(this, ${origIdx}, false, ${q.point})">我没答对</button>
         </div>
       </div>`;
@@ -1178,9 +1716,9 @@ function selfGradeText(btn, idx, correct, points) {
   }
   const scoreEl = document.querySelector('.result-card .score');
   const currentText = scoreEl.textContent || scoreEl.innerText || '0';
-  const currentScore = parseInt(currentText) || 0;
+  const currentScore = parseFloat(currentText) || 0;
   const newScore = currentScore + (correct ? points : 0);
-  scoreEl.innerHTML = newScore + '<span style="font-size:20px">分</span>';
+  scoreEl.innerHTML = formatScore(newScore) + '<span style="font-size:20px">分</span>';
   scoreEl.classList.toggle('fail', newScore < 60);
 }
 
@@ -1198,7 +1736,7 @@ function reviewExam() {
   let html = '<div style="margin-top:16px;"><h3>错题回顾</h3>';
   wrongOnes.forEach((q, i) => {
     html += `<div class="card">
-      <div class="q-meta"><span class="tag type-single">${q.type}</span><span class="tag">${q.point}分</span></div>
+      <div class="q-meta"><span class="tag type-single">${q.type}</span><span class="tag">${formatScore(q.point)}分</span></div>
       <div class="q-body">${formatQuestionText(q)}</div>
       <div style="font-size:14px;color:var(--danger);">你的答案: ${q.userAns||'未作答'}</div>
       <div style="font-size:14px;color:var(--success);">正确答案: ${q.answer}</div>
