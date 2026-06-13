@@ -13,3 +13,7 @@ questions_before_opt.json
 # 系统文件
 Thumbs.db
 desktop.ini
+
+# Cloudflare Worker local secrets
+worker/.dev.vars
+worker/.wrangler/

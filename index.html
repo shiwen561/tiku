@@ -76,6 +76,11 @@ body {
   transition: all var(--transition); box-shadow: 0 8px 18px rgba(15,118,110,0.18);
 }
 .login-btn:hover { background: var(--primary-dark); border-color: var(--primary-dark); transform: translateY(-1px); }
+.login-btn.logged-in {
+  background: #fff; color: var(--primary-dark); border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.login-btn.logged-in:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
 /* ========== App Layout ========== */
 .app-layout { display: flex; flex: 1; min-height: 0; }
@@ -335,9 +340,44 @@ body {
 .ai-section:first-of-type { border-top: none; padding-top: 0; }
 .ai-section h4 { font-size: 14px; color: var(--text); margin-bottom: 7px; }
 .ai-section p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; }
+.ai-loading { color: var(--text-muted); font-size: 14px; line-height: 1.8; }
+.ai-error { color: var(--danger); font-size: 13px; margin-bottom: 10px; }
 .ai-modal-footer {
   display: flex; justify-content: flex-end; gap: 10px;
   padding: 14px 18px; border-top: 1px solid var(--border); background: #FAFBFA;
+}
+.login-modal { width: min(440px, 100%); }
+.login-tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-bottom: 16px; padding: 4px; background: var(--bg); border-radius: var(--radius);
+}
+.login-tab {
+  height: 36px; border: 0; border-radius: var(--radius-xs); cursor: pointer;
+  background: transparent; color: var(--text-secondary); font-weight: 700;
+}
+.login-tab.active { background: #fff; color: var(--primary-dark); box-shadow: var(--shadow-sm); }
+.login-form { display: flex; flex-direction: column; gap: 12px; }
+.login-field label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+.login-field input {
+  width: 100%; height: 40px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0 12px; font: inherit; color: var(--text); background: #fff;
+}
+.login-field input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(15,118,110,0.12); }
+.login-help {
+  font-size: 12px; color: var(--text-muted); line-height: 1.7;
+  background: #FAFBFA; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.login-status { min-height: 20px; font-size: 13px; color: var(--text-secondary); }
+.login-status.error { color: var(--danger); }
+.login-status.success { color: var(--success); }
+.login-config {
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-light);
+}
+.login-config-row { display: flex; gap: 8px; align-items: center; }
+.login-config-row input {
+  flex: 1; height: 38px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0 10px; font: inherit;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -531,7 +571,7 @@ body {
     <div class="top-stat"><div class="num" id="topWrong">0</div><div class="lbl">错题</div></div>
     <div class="top-stat"><div class="num" id="topAccuracy">-</div><div class="lbl">正确率</div></div>
   </div>
-  <button class="login-btn" type="button" onclick="login()">登录</button>
+  <button class="login-btn" id="loginButton" type="button" onclick="login()">登录</button>
 </div>
 
 <!-- App Layout -->
@@ -582,6 +622,7 @@ body {
           <div class="sb-row"><span>已答</span><span id="sbAnswered">0</span></div>
           <div class="sb-row"><span>正确</span><span id="sbCorrect">0</span></div>
           <div class="sb-row"><span>正确率</span><span id="sbAccuracy">--</span></div>
+          <button class="btn btn-primary" type="button" onclick="generatePracticeReport()" style="width:100%;margin-top:12px;">生成练题报告</button>
         </div>
       </div>
     </div>
@@ -602,6 +643,57 @@ body {
   <div id="examView" style="display:none;flex:1;overflow-y:auto;"></div>
 </div>
 
+<!-- Login Modal -->
+<div class="ai-modal-mask" id="loginModalMask" onclick="handleLoginModalMaskClick(event)">
+  <div class="ai-modal login-modal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+    <div class="ai-modal-header">
+      <div class="ai-modal-title" id="loginModalTitle">账号登录</div>
+      <button class="ai-modal-close" type="button" onclick="closeLoginModal()" aria-label="关闭">×</button>
+    </div>
+    <div class="ai-modal-body">
+      <div class="login-tabs">
+        <button class="login-tab active" id="loginTabLogin" type="button" onclick="switchAuthMode('login')">登录</button>
+        <button class="login-tab" id="loginTabRegister" type="button" onclick="switchAuthMode('register')">注册</button>
+      </div>
+      <form class="login-form" onsubmit="submitAuthForm(event)">
+        <div class="login-field" id="nicknameField" style="display:none;">
+          <label for="authNickname">昵称</label>
+          <input id="authNickname" type="text" autocomplete="nickname" maxlength="24" placeholder="例如：会计备考人">
+        </div>
+        <div class="login-field">
+          <label for="authEmail">邮箱</label>
+          <input id="authEmail" type="email" autocomplete="email" placeholder="用于注册和登录" required>
+        </div>
+        <div class="login-field" id="registerCodeField" style="display:none;">
+          <label for="authRegisterCode">邮箱验证码</label>
+          <div class="login-config-row">
+            <input id="authRegisterCode" type="text" inputmode="numeric" maxlength="8" placeholder="输入验证码">
+            <button class="btn btn-outline" id="sendCodeBtn" type="button" onclick="sendRegisterCode()">发送验证码</button>
+          </div>
+        </div>
+        <div class="login-field">
+          <label for="authPassword">密码</label>
+          <input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="至少 6 位" required>
+        </div>
+        <div class="login-help" id="loginHelp">注册时先发送邮箱验证码；注册成功后可使用同一邮箱和密码登录。</div>
+        <div class="login-status" id="loginStatus"></div>
+        <button class="btn btn-primary" id="authSubmitBtn" type="submit" style="width:100%;">登录</button>
+      </form>
+      <div class="login-config">
+        <div class="login-help">CloudBase 环境 ID 是公开配置，不是密钥。创建腾讯云开发环境后填入一次即可。</div>
+        <div class="login-config-row" style="margin-top:10px;">
+          <input id="cloudbaseEnvInput" type="text" placeholder="例如：your-env-id-123456">
+          <button class="btn btn-outline" type="button" onclick="saveCloudbaseEnv()">保存</button>
+        </div>
+      </div>
+    </div>
+    <div class="ai-modal-footer">
+      <button class="btn btn-outline" type="button" onclick="logout()">退出登录</button>
+      <button class="btn btn-outline" type="button" onclick="closeLoginModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
 <!-- AI Explain Modal -->
 <div class="ai-modal-mask" id="aiModalMask" onclick="handleAiModalMaskClick(event)">
   <div class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="aiModalTitle">
@@ -614,7 +706,7 @@ body {
       <div id="aiExplainContent"></div>
     </div>
     <div class="ai-modal-footer">
-      <button class="btn btn-outline" type="button" onclick="openAiExplainModal(true)">重新生成</button>
+      <button class="btn btn-outline" type="button" onclick="rerunCurrentAiAction()">重新生成</button>
       <button class="btn btn-primary" type="button" onclick="addAiExplainNote()">加入错题笔记</button>
     </div>
   </div>
@@ -660,6 +752,10 @@ body {
 </div>
 
 <script>
+window.CLOUDBASE_CONFIG = {
+  env: 'hsw13026226869-d3ghslyh39e8bc57f',
+};
+
 // ==================== GLOBAL STATE ====================
 let allQuestions = [];
 const TEXT_TYPES = new Set(['计算分析题', '综合题', '简答题']);
@@ -778,6 +874,7 @@ let favSet = new Set();
 let answeredSet = new Set();
 let currentMode = 'quiz';
 let activeChapterPractice = null;
+const AI_PROXY_BASE = (localStorage.getItem('aiProxyBase') || 'https://tiku-ai-proxy.shiwenhuang891.workers.dev').replace(/\/$/, '');
 
 // Quiz state
 let filteredQuestions = [];
@@ -786,6 +883,28 @@ let selectedOptions = new Set();
 let answerSheetPage = 0;
 const ANSWER_SHEET_PAGE_SIZE = 30;
 let lastUserAnswer = '';
+let practiceRecords = {};
+let currentAiAction = 'explain';
+let pendingPracticeRecords = new Map();
+
+// CloudBase auth/sync state. Set env in the login modal or before this script:
+// window.CLOUDBASE_CONFIG = { env: 'your-cloudbase-env-id' }
+const CLOUDBASE_CONFIG = Object.assign(
+  { env: '', region: '' },
+  window.CLOUDBASE_CONFIG || {},
+  { env: localStorage.getItem('cloudbaseEnv') || (window.CLOUDBASE_CONFIG && window.CLOUDBASE_CONFIG.env) || '' }
+);
+let cloudbaseApp = null;
+let cloudbaseAuth = null;
+let cloudbaseDb = null;
+let currentUser = null;
+let authMode = 'login';
+let cloudSyncTimer = null;
+let cloudSyncing = false;
+let cloudbaseReadyPromise = null;
+let registerVerificationInfo = null;
+let learningStorageScope = 'guest';
+const LEGACY_LEARNING_KEYS = ['wrongSet', 'favSet', 'answeredSet', 'practiceRecords'];
 
 // Exam state
 let examQuestions = [];
@@ -815,8 +934,9 @@ fetch(`questions.json?v=${Date.now()}`, { cache: 'no-store' })
     }
   });
 
-try { wrongSet = new Set(JSON.parse(localStorage.getItem('wrongSet') || '[]')); } catch(e) {}
-try { favSet = new Set(JSON.parse(localStorage.getItem('favSet') || '[]')); } catch(e) {}
+migrateLegacyLearningState();
+loadLearningState('guest');
+initCloudbaseAuth();
 
 // ==================== NAVIGATION ====================
 function navSwitch(tab) {
@@ -966,8 +1086,11 @@ function goToQuestion(i) {
 function clearAnswers() {
   if (!confirm('确定清空所有答题记录？（不会删除错题本数据）')) return;
   answeredSet.clear();
+  practiceRecords = {};
+  pendingPracticeRecords.clear();
   updateTopBar();
   updateAnswerSheet();
+  scheduleCloudSync();
   if (filteredQuestions.length > 0) {
     currentIndex = -1;
     nextQuestion();
@@ -1209,9 +1332,10 @@ function checkAnswer(correctAnswer, isMultiFlag) {
   document.getElementById('expText').textContent = filteredQuestions[currentIndex].explanation ? '解析: ' + filteredQuestions[currentIndex].explanation : '';
   answeredSet.add(filteredQuestions[currentIndex].id);
   if (!isCorrect) wrongSet.add(filteredQuestions[currentIndex].id);
+  recordPracticeAnswer(filteredQuestions[currentIndex], userAnswer, isCorrect);
   updateTopBar();
   updateAnswerSheet();
-  try { localStorage.setItem('wrongSet', JSON.stringify([...wrongSet])); } catch(e) {}
+  scheduleCloudSync();
 }
 
 function showTextAnswer() {
@@ -1225,18 +1349,45 @@ function showTextAnswer() {
   document.getElementById('resultText').textContent = userAnswer ? '你的答案已记录，请对照参考答案：' : '未作答，请对照参考答案：';
   document.getElementById('expText').innerHTML = '<strong>参考答案:</strong><pre style="white-space:pre-wrap;font-family:inherit;line-height:1.6;margin:8px 0 0;">' + escapeHtml(q.answer || '暂无') + '</pre>';
   answeredSet.add(q.id);
+  recordPracticeAnswer(q, userAnswer, null);
   updateTopBar();
   updateAnswerSheet();
+  scheduleCloudSync();
 }
 
-function openAiExplainModal(regenerate = false) {
+async function openAiExplainModal(regenerate = false) {
   const q = filteredQuestions[currentIndex];
   if (!q) return;
   const content = document.getElementById('aiExplainContent');
   const mask = document.getElementById('aiModalMask');
   if (!content || !mask) return;
-  content.innerHTML = buildLocalAiExplanation(q, regenerate);
+  currentAiAction = 'explain';
+  const title = document.getElementById('aiModalTitle');
+  if (title) title.textContent = 'AI 错题解疑';
+  const userAnswer = lastUserAnswer || getCurrentSelectedAnswer() || '未作答';
+  const cacheKey = getAiCacheKey('explain', q.id, `${getUserMode()}:${userAnswer}`);
+  if (!regenerate) {
+    const cached = getAiCache(cacheKey);
+    if (cached) {
+      content.innerHTML = renderAiText(cached);
+      mask.classList.add('visible');
+      return;
+    }
+  }
+  content.innerHTML = '<div class="ai-loading">AI 正在生成精简解析...</div>';
   mask.classList.add('visible');
+  try {
+    const payload = {
+      userMode: getUserMode(),
+      userAnswer,
+      question: compactQuestionPayload(q),
+    };
+    const result = await callAiProxy('/api/ai-explain', payload);
+    setAiCache(cacheKey, result.content);
+    content.innerHTML = renderAiText(result.content);
+  } catch (error) {
+    content.innerHTML = `<div class="ai-error">AI 服务暂不可用，已切换到本地解析。</div>${buildLocalAiExplanation(q, regenerate)}`;
+  }
 }
 
 function closeAiExplainModal() {
@@ -1294,11 +1445,218 @@ function getAnswerDisplayText(q, answer) {
   return parts.join('；');
 }
 
+function recordPracticeAnswer(q, userAnswer, isCorrect) {
+  if (!q || !q.id) return;
+  practiceRecords[q.id] = {
+    id: q.id,
+    subject: q.subject,
+    category: q.category,
+    type: q.type,
+    year: q.year,
+    question: trimForAi(q.question, 180),
+    answer: trimForAi(q.answer, 120),
+    userAnswer: trimForAi(userAnswer || '未作答', 160),
+    isCorrect,
+    answeredAt: Date.now(),
+  };
+  pendingPracticeRecords.set(`${q.id}:${practiceRecords[q.id].answeredAt}`, practiceRecords[q.id]);
+}
+
+function compactQuestionPayload(q) {
+  const isTextType = TEXT_TYPES.has(q.type);
+  return {
+    id: q.id,
+    subject: q.subject,
+    category: q.category,
+    type: q.type,
+    year: q.year,
+    question: trimForAi(q.question, isTextType ? 1200 : 800),
+    options: Array.isArray(q.options) ? q.options.slice(0, 5).map(opt => trimForAi(opt, 140)) : [],
+    answer: trimForAi(q.answer, 220),
+    explanation: trimForAi(q.explanation, 400),
+    isTextType,
+  };
+}
+
+async function callAiProxy(path, payload) {
+  const res = await fetch(`${AI_PROXY_BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `AI proxy ${res.status}`);
+  return data;
+}
+
+function getAiCacheKey(kind, id, extra = '') {
+  return `aiCache:${kind}:${id}:${simpleHash(String(extra))}`;
+}
+
+function getAiCache(key) {
+  try {
+    const item = JSON.parse(localStorage.getItem(key) || 'null');
+    if (!item || !item.content) return '';
+    if (Date.now() - item.time > 7 * 24 * 60 * 60 * 1000) return '';
+    return item.content;
+  } catch(e) {
+    return '';
+  }
+}
+
+function setAiCache(key, content) {
+  try { localStorage.setItem(key, JSON.stringify({ content, time: Date.now() })); } catch(e) {}
+}
+
+function simpleHash(text) {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+  return String(Math.abs(hash));
+}
+
+function trimForAi(value, max) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  return text.length > max ? text.slice(0, max) + '...' : text;
+}
+
+function renderAiText(text) {
+  const raw = String(text || '').trim();
+  if (!raw) return '<div class="ai-section"><p>暂无内容。</p></div>';
+  const sections = raw.split(/\n(?=\s*(?:错因|正确思路|考点|记忆提醒|整体评价|薄弱点|复习建议|下一步练习计划)[:：])/).filter(Boolean);
+  if (sections.length > 1) {
+    return sections.map(section => {
+      const m = section.match(/^\s*([^:：\n]+)[:：]\s*([\s\S]*)$/);
+      if (!m) return `<div class="ai-section"><p>${escapeHtml(section)}</p></div>`;
+      return `<div class="ai-section"><h4>${escapeHtml(m[1].trim())}</h4><p>${escapeHtml(m[2].trim())}</p></div>`;
+    }).join('');
+  }
+  return `<div class="ai-section"><p>${escapeHtml(raw)}</p></div>`;
+}
+
+async function generatePracticeReport() {
+  const content = document.getElementById('aiExplainContent');
+  const mask = document.getElementById('aiModalMask');
+  const title = document.getElementById('aiModalTitle');
+  if (!content || !mask) return;
+  currentAiAction = 'practice-report';
+  if (title) title.textContent = 'AI 练题报告';
+  const payload = buildPracticeReportPayload();
+  const cacheKey = getAiCacheKey('practice-report', payload.stats.scope, JSON.stringify(payload.stats));
+  const cached = getAiCache(cacheKey);
+  if (cached) {
+    content.innerHTML = renderAiText(cached);
+    mask.classList.add('visible');
+    return;
+  }
+  content.innerHTML = '<div class="ai-loading">AI 正在生成本轮练题报告...</div>';
+  mask.classList.add('visible');
+  try {
+    const result = await callAiProxy('/api/practice-report', payload);
+    setAiCache(cacheKey, result.content);
+    content.innerHTML = renderAiText(result.content);
+  } catch (error) {
+    content.innerHTML = `<div class="ai-error">AI 报告暂不可用。</div>${buildLocalPracticeReport(payload)}`;
+  }
+}
+
+function rerunCurrentAiAction() {
+  if (currentAiAction === 'practice-report') return generatePracticeReport();
+  if (currentAiAction === 'exam-report') return generateExamReport();
+  return openAiExplainModal(true);
+}
+
+function buildPracticeReportPayload(sourceResults = null, scopeLabel = '') {
+  const records = sourceResults
+    ? sourceResults.map(r => ({
+        id: r.id,
+        subject: r.subject,
+        category: r.category,
+        type: r.type,
+        year: r.year,
+        question: trimForAi(r.question, 180),
+        answer: trimForAi(r.answer, 120),
+        userAnswer: trimForAi(r.userAns || r.userAnswer || '未作答', 160),
+        isCorrect: r.isCorrect,
+      }))
+    : filteredQuestions
+        .filter(q => answeredSet.has(q.id) || practiceRecords[q.id])
+        .map(q => practiceRecords[q.id] || {
+          id: q.id,
+          subject: q.subject,
+          category: q.category,
+          type: q.type,
+          year: q.year,
+          question: trimForAi(q.question, 180),
+          answer: trimForAi(q.answer, 120),
+          userAnswer: '未记录',
+          isCorrect: wrongSet.has(q.id) ? false : true,
+        });
+  const answered = records.length;
+  const wrongRecords = records.filter(r => r.isCorrect === false);
+  const correct = records.filter(r => r.isCorrect === true).length;
+  const wrongByType = countBy(wrongRecords, 'type');
+  const wrongByCategory = countBy(wrongRecords, 'category');
+  const scope = scopeLabel || getPracticeScopeLabel();
+  return {
+    userMode: getUserMode(),
+    stats: {
+      scope,
+      userMode: getUserMode(),
+      total: sourceResults ? sourceResults.length : filteredQuestions.length,
+      answered,
+      correct,
+      wrong: wrongRecords.length,
+      accuracy: answered ? Math.round((correct / answered) * 100) + '%' : '--',
+      wrongByType,
+      wrongByCategory,
+    },
+    wrongSamples: wrongRecords.slice(0, 8).map(r => ({
+      type: r.type,
+      category: r.category,
+      question: r.question,
+      userAnswer: r.userAnswer,
+      answer: r.answer,
+    })),
+  };
+}
+
+function countBy(rows, key) {
+  return rows.reduce((acc, row) => {
+    const name = row[key] || '未分类';
+    acc[name] = (acc[name] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function getPracticeScopeLabel() {
+  const subject = document.getElementById('selSubject')?.value || 'all';
+  const category = document.getElementById('selCategory')?.value || 'all';
+  const type = document.getElementById('selType')?.value || 'all';
+  const year = document.getElementById('selYear')?.value || 'all';
+  return [
+    subject === 'all' ? '全部考试' : subject,
+    category === 'all' ? '全部小类' : category,
+    type === 'all' ? '全部题型' : type,
+    year === 'all' ? '全部年份' : `${year}年`,
+  ].join(' / ');
+}
+
+function buildLocalPracticeReport(payload) {
+  const s = payload.stats;
+  const weakTypes = Object.keys(s.wrongByType || {}).join('、') || '暂无明显错题题型';
+  const weakCats = Object.keys(s.wrongByCategory || {}).join('、') || '暂无明显薄弱科目';
+  return `
+    <div class="ai-section"><h4>整体评价</h4><p>本轮已答 ${s.answered} 题，正确率 ${s.accuracy}。继续保持稳定练习节奏。</p></div>
+    <div class="ai-section"><h4>薄弱点</h4><p>错题主要集中在 ${escapeHtml(weakTypes)}，涉及 ${escapeHtml(weakCats)}。</p></div>
+    <div class="ai-section"><h4>复习建议</h4><p>先回看错题题干关键词和原解析，再按同题型连续练习 10-20 题。</p></div>
+    <div class="ai-section"><h4>下一步练习计划</h4><p>建议优先刷错题本，再进入章节练习补薄弱知识点。</p></div>`;
+}
+
 function addAiExplainNote() {
   const q = filteredQuestions[currentIndex];
   if (q && q.id) {
     favSet.add(q.id);
-    try { localStorage.setItem('favSet', JSON.stringify([...favSet])); } catch(e) {}
+    scheduleCloudSync();
     const el = document.getElementById('btnMark');
     if (el) {
       el.classList.add('active');
@@ -1314,6 +1672,11 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape' && mask && mask.classList.contains('visible')) {
     e.preventDefault();
     closeAiExplainModal();
+  }
+  const loginMask = document.getElementById('loginModalMask');
+  if (e.key === 'Escape' && loginMask && loginMask.classList.contains('visible')) {
+    e.preventDefault();
+    closeLoginModal();
   }
 });
 
@@ -1341,7 +1704,7 @@ function resetFilters() {
 function toggleFavorite(qid) {
   if (favSet.has(qid)) favSet.delete(qid);
   else favSet.add(qid);
-  try { localStorage.setItem('favSet', JSON.stringify([...favSet])); } catch(e) {}
+  scheduleCloudSync();
   const el = document.getElementById('btnMark');
   if (el) {
     el.classList.toggle('active', favSet.has(qid));
@@ -1352,7 +1715,7 @@ function toggleFavorite(qid) {
 
 function deleteFromWrong(qid) {
   wrongSet.delete(qid);
-  try { localStorage.setItem('wrongSet', JSON.stringify([...wrongSet])); } catch(e) {}
+  scheduleCloudSync();
   const mode = document.getElementById('selMode').value;
   if (mode === 'wrong') {
     filteredQuestions = filteredQuestions.filter(q => q.id !== qid);
@@ -1377,7 +1740,559 @@ function toggleTheme() {
 }
 
 function login() {
-  alert('登录功能开发中...');
+  openLoginModal();
+}
+
+function openLoginModal() {
+  const mask = document.getElementById('loginModalMask');
+  const envInput = document.getElementById('cloudbaseEnvInput');
+  if (envInput) envInput.value = CLOUDBASE_CONFIG.env || '';
+  setLoginStatus(currentUser ? `当前已登录：${currentUser.nickname || currentUser.email || currentUser.uid}` : getCloudbaseHint(), currentUser ? 'success' : '');
+  updateLoginButton();
+  if (mask) mask.classList.add('visible');
+}
+
+function closeLoginModal() {
+  const mask = document.getElementById('loginModalMask');
+  if (mask) mask.classList.remove('visible');
+}
+
+function handleLoginModalMaskClick(event) {
+  if (event.target && event.target.id === 'loginModalMask') closeLoginModal();
+}
+
+function switchAuthMode(mode) {
+  authMode = mode === 'register' ? 'register' : 'login';
+  document.getElementById('loginTabLogin')?.classList.toggle('active', authMode === 'login');
+  document.getElementById('loginTabRegister')?.classList.toggle('active', authMode === 'register');
+  const nicknameField = document.getElementById('nicknameField');
+  if (nicknameField) nicknameField.style.display = authMode === 'register' ? '' : 'none';
+  const registerCodeField = document.getElementById('registerCodeField');
+  if (registerCodeField) registerCodeField.style.display = authMode === 'register' ? '' : 'none';
+  const title = document.getElementById('loginModalTitle');
+  if (title) title.textContent = authMode === 'register' ? '邮箱注册' : '账号登录';
+  const btn = document.getElementById('authSubmitBtn');
+  if (btn) btn.textContent = authMode === 'register' ? '注册并登录' : '登录';
+  const pwd = document.getElementById('authPassword');
+  if (pwd) pwd.autocomplete = authMode === 'register' ? 'new-password' : 'current-password';
+  setLoginStatus(authMode === 'register' ? '请输入邮箱，先发送验证码，再填写验证码和密码完成注册。' : getCloudbaseHint(), '');
+}
+
+async function submitAuthForm(event) {
+  event.preventDefault();
+  const email = document.getElementById('authEmail')?.value.trim();
+  const password = document.getElementById('authPassword')?.value || '';
+  const nickname = document.getElementById('authNickname')?.value.trim();
+  const registerCode = document.getElementById('authRegisterCode')?.value.trim();
+  if (!email || !password) return setLoginStatus('请输入邮箱和密码。', 'error');
+  if (!isValidEmail(email)) return setLoginStatus('邮箱格式不正确，请检查后重试。', 'error');
+  if (password.length < 6) return setLoginStatus('密码至少 6 位。', 'error');
+  try {
+    setAuthBusy(true, authMode === 'register' ? '注册中...' : '登录中...');
+    await ensureCloudbaseReady();
+    if (authMode === 'register') {
+      if (!registerCode) return setLoginStatus('请输入邮箱验证码。', 'error');
+      await registerWithEmailCode(email, password, registerCode, nickname);
+      await loginWithEmailPassword(email, password);
+      await refreshCurrentUser(nickname || email);
+      switchLearningScope(getCurrentUserLearningScope());
+      updateLoginButton();
+      await saveUserProfile(nickname || email, email).catch(error => console.warn('Save profile failed', error));
+      registerVerificationInfo = null;
+      setLoginStatus('注册成功，正在同步本地学习记录...', 'success');
+    } else {
+      await loginWithEmailPassword(email, password);
+      await refreshCurrentUser();
+      switchLearningScope(getCurrentUserLearningScope());
+      updateLoginButton();
+      setLoginStatus('登录成功，正在同步本地学习记录...', 'success');
+    }
+    const synced = await safeSyncLearningStateAfterLogin();
+    if (allQuestions.length && document.getElementById('selMode')) applyFilters();
+    else {
+      updateTopBar();
+      updateAnswerSheet();
+    }
+    setLoginStatus(synced ? '已切换到账号学习记录，同步完成。' : '已切换到账号学习记录，但云端学习数据暂不可用，当前先使用本机账号记录。', synced ? 'success' : '');
+  } catch (error) {
+    setLoginStatus(getReadableAuthError(error), 'error');
+  } finally {
+    setAuthBusy(false);
+  }
+}
+
+async function sendRegisterCode() {
+  const email = document.getElementById('authEmail')?.value.trim();
+  if (!email) return setLoginStatus('请先填写邮箱。', 'error');
+  if (!isValidEmail(email)) return setLoginStatus('邮箱格式不正确，请检查后重试。', 'error');
+  try {
+    const btn = document.getElementById('sendCodeBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '发送中...'; }
+    await ensureCloudbaseReady();
+    registerVerificationInfo = normalizeCloudbaseResult(await sendEmailVerification(email));
+    if (registerVerificationInfo && registerVerificationInfo.is_user) {
+      setLoginStatus('这个邮箱已经注册过，请切换到登录页直接登录。', 'error');
+      return;
+    }
+    setLoginStatus('验证码已发送，请查看邮箱后继续注册。', 'success');
+  } catch (error) {
+    setLoginStatus(getReadableAuthError(error), 'error');
+  } finally {
+    const btn = document.getElementById('sendCodeBtn');
+    if (btn) { btn.disabled = false; btn.textContent = '发送验证码'; }
+  }
+}
+
+async function logout() {
+  try {
+    if (cloudbaseAuth && currentUser) await cloudbaseAuth.signOut();
+  } catch(e) {}
+  currentUser = null;
+  switchLearningScope('guest');
+  updateLoginButton();
+  setLoginStatus('已退出登录，当前显示访客本地记录。', 'success');
+}
+
+function saveCloudbaseEnv() {
+  const input = document.getElementById('cloudbaseEnvInput');
+  const env = input ? input.value.trim() : '';
+  if (!env) return setLoginStatus('请填写 CloudBase 环境 ID。', 'error');
+  CLOUDBASE_CONFIG.env = env;
+  localStorage.setItem('cloudbaseEnv', env);
+  cloudbaseReadyPromise = null;
+  cloudbaseApp = null;
+  cloudbaseAuth = null;
+  cloudbaseDb = null;
+  setLoginStatus('环境 ID 已保存，可以登录或注册了。', 'success');
+  initCloudbaseAuth();
+}
+
+async function initCloudbaseAuth() {
+  updateLoginButton();
+  if (!CLOUDBASE_CONFIG.env) return;
+  try {
+    await ensureCloudbaseReady();
+    await refreshCurrentUser();
+    if (currentUser) {
+      switchLearningScope(getCurrentUserLearningScope());
+      await mergeCloudLearningState();
+      if (allQuestions.length && document.getElementById('selMode')) applyFilters();
+      else {
+        updateTopBar();
+        updateAnswerSheet();
+      }
+    }
+  } catch (error) {
+    console.warn('CloudBase init failed', error);
+  } finally {
+    updateLoginButton();
+  }
+}
+
+async function ensureCloudbaseReady() {
+  if (!CLOUDBASE_CONFIG.env) throw new Error('missing-env');
+  if (cloudbaseApp && cloudbaseAuth && cloudbaseDb) return;
+  if (!cloudbaseReadyPromise) {
+    cloudbaseReadyPromise = (async () => {
+      await loadCloudbaseSdk();
+      const sdk = window.cloudbase || window.tcb;
+      if (!sdk || !sdk.init) throw new Error('sdk-not-loaded');
+      cloudbaseApp = sdk.init({ env: CLOUDBASE_CONFIG.env, region: CLOUDBASE_CONFIG.region || undefined });
+      cloudbaseAuth = cloudbaseApp.auth({ persistence: 'local' });
+      cloudbaseDb = cloudbaseApp.database();
+    })();
+  }
+  await cloudbaseReadyPromise;
+}
+
+function loadCloudbaseSdk() {
+  if (window.cloudbase || window.tcb) return Promise.resolve();
+  if (window.__cloudbaseEsmLoading) return window.__cloudbaseEsmLoading;
+  const esmUrls = [
+    'https://esm.sh/@cloudbase/js-sdk@3.4.5?bundle',
+    'https://cdn.jsdelivr.net/npm/@cloudbase/js-sdk@3.4.5/+esm',
+  ];
+  window.__cloudbaseEsmLoading = esmUrls.reduce((chain, url) => {
+    return chain.catch(() => import(url).then(mod => {
+      window.cloudbase = mod.default || mod.cloudbase || mod;
+    }));
+  }, Promise.reject()).catch(() => loadLegacyCloudbaseSdk());
+  return window.__cloudbaseEsmLoading;
+}
+
+function loadLegacyCloudbaseSdk() {
+  const urls = [
+    'https://static.cloudbase.net/cloudbase-js-sdk/2.10.3/cloudbase.full.js',
+    'https://imgcache.qq.com/qcloud/cloudbase-js-sdk/2.10.3/cloudbase.full.js',
+    'https://imgcache.qq.com/qcloud/tcbjs/1.10.10/tcb.js',
+  ];
+  return new Promise((resolve, reject) => {
+    let index = 0;
+    const tryNext = () => {
+      if (index >= urls.length) return reject(new Error('sdk-not-loaded'));
+      const script = document.createElement('script');
+      script.src = urls[index++];
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = tryNext;
+      document.head.appendChild(script);
+    };
+    tryNext();
+  });
+}
+
+async function sendEmailVerification(email) {
+  if (cloudbaseAuth.getVerification) {
+    return cloudbaseAuth.getVerification({ email });
+  }
+  if (cloudbaseAuth.sendEmailVerification) {
+    return cloudbaseAuth.sendEmailVerification(email);
+  }
+  if (cloudbaseAuth.emailAuthProvider && cloudbaseAuth.emailAuthProvider().sendVerification) {
+    return cloudbaseAuth.emailAuthProvider().sendVerification(email);
+  }
+  throw new Error('email-code-unsupported');
+}
+
+async function registerWithEmailCode(email, password, code, nickname = '') {
+  if (cloudbaseAuth.verify && cloudbaseAuth.signUp) {
+    const verificationId = registerVerificationInfo && (registerVerificationInfo.verification_id || registerVerificationInfo.verificationId || registerVerificationInfo.id);
+    const verifyPayload = verificationId
+      ? { verification_id: verificationId, verification_code: code }
+      : { email, verification_code: code };
+    const verified = normalizeCloudbaseResult(await cloudbaseAuth.verify(verifyPayload));
+    const token = verified && (verified.verification_token || verified.verificationToken || verified.token);
+    return cloudbaseAuth.signUp({
+      email,
+      password,
+      name: nickname || email,
+      verification_code: code,
+      verification_token: token,
+    });
+  }
+  if (cloudbaseAuth.signUpWithEmailAndPassword && email) {
+    return cloudbaseAuth.signUpWithEmailAndPassword(email, password);
+  }
+  throw new Error('email-register-unsupported');
+}
+
+function normalizeCloudbaseResult(result) {
+  return result && result.data ? result.data : result;
+}
+
+async function loginWithEmailPassword(email, password) {
+  if (cloudbaseAuth.signIn) {
+    return cloudbaseAuth.signIn({ username: email, password });
+  }
+  if (cloudbaseAuth.signInWithPassword) {
+    return cloudbaseAuth.signInWithPassword({ username: email, password });
+  }
+  if (cloudbaseAuth.signInWithEmailAndPassword) {
+    return cloudbaseAuth.signInWithEmailAndPassword(email, password);
+  }
+  throw new Error('email-login-unsupported');
+}
+
+async function registerWithEmail(email, password) {
+  if (cloudbaseAuth.signUpWithEmailAndPassword) {
+    return cloudbaseAuth.signUpWithEmailAndPassword(email, password);
+  }
+  if (cloudbaseAuth.emailAuthProvider && cloudbaseAuth.emailAuthProvider().signUp) {
+    return cloudbaseAuth.emailAuthProvider().signUp(email, password);
+  }
+  throw new Error('email-register-unsupported');
+}
+
+async function loginWithEmail(email, password) {
+  if (cloudbaseAuth.signInWithEmailAndPassword) {
+    return cloudbaseAuth.signInWithEmailAndPassword(email, password);
+  }
+  if (cloudbaseAuth.emailAuthProvider && cloudbaseAuth.emailAuthProvider().signIn) {
+    return cloudbaseAuth.emailAuthProvider().signIn(email, password);
+  }
+  throw new Error('email-login-unsupported');
+}
+
+async function refreshCurrentUser(defaultNickname = '') {
+  let state = null;
+  if (cloudbaseAuth.getLoginState) state = await cloudbaseAuth.getLoginState();
+  if (!state && cloudbaseAuth.hasLoginState) state = await cloudbaseAuth.hasLoginState();
+  const raw = state && (state.user || state);
+  currentUser = raw ? normalizeCloudUser(raw, defaultNickname) : null;
+  updateLoginButton();
+  return currentUser;
+}
+
+function normalizeCloudUser(raw, defaultNickname = '') {
+  const uid = raw.uid || raw._id || raw.openid || raw.openId || raw.userId || raw.email || raw.emailVerified || '';
+  return {
+    uid: String(uid || ''),
+    email: raw.email || raw.emailVerified || '',
+    nickname: raw.nickName || raw.nickname || raw.displayName || defaultNickname || raw.email || '已登录用户',
+    avatarUrl: raw.avatarUrl || raw.photoURL || '',
+  };
+}
+
+async function saveUserProfile(nickname, email) {
+  if (!currentUser || !cloudbaseDb) return;
+  const profile = {
+    userId: currentUser.uid,
+    nickname: nickname || currentUser.nickname || '',
+    email: email || currentUser.email || '',
+    avatarUrl: currentUser.avatarUrl || '',
+    authProvider: 'email',
+    lastLoginAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+  await upsertCloudDoc('user_profiles', currentUser.uid, profile);
+}
+
+async function safeSyncLearningStateAfterLogin() {
+  try {
+    const merged = await mergeCloudLearningState();
+    const pushed = await pushLearningStateToCloud();
+    return merged !== false && pushed !== false;
+  } catch (error) {
+    console.warn('Cloud learning sync unavailable', error);
+    saveLocalLearningState();
+    return false;
+  }
+}
+
+async function mergeCloudLearningState() {
+  if (!currentUser || !cloudbaseDb) return;
+  let cloudData = null;
+  try {
+    const res = await cloudbaseDb.collection('learning_state').doc(currentUser.uid).get();
+    cloudData = Array.isArray(res.data) ? res.data[0] : res.data;
+  } catch(e) {
+    if (isCloudCollectionMissingError(e) || isCloudPermissionError(e)) {
+      saveLocalLearningState();
+      return false;
+    }
+    console.warn('Merge cloud learning state failed', e);
+    saveLocalLearningState();
+    return false;
+  }
+  if (!cloudData) {
+    saveLocalLearningState();
+    return true;
+  }
+  wrongSet = mergeSet(wrongSet, cloudData.wrongIds);
+  favSet = mergeSet(favSet, cloudData.favIds);
+  answeredSet = mergeSet(answeredSet, cloudData.answeredIds);
+  practiceRecords = mergePracticeRecords(practiceRecords, cloudData.practiceRecords);
+  saveLocalLearningState();
+  return true;
+}
+
+function mergeSet(baseSet, values) {
+  const merged = new Set(baseSet || []);
+  (Array.isArray(values) ? values : []).forEach(v => merged.add(v));
+  return merged;
+}
+
+function mergePracticeRecords(localRecords, cloudRecords) {
+  const merged = Object.assign({}, cloudRecords || {}, localRecords || {});
+  Object.keys(merged).forEach(id => {
+    if (!merged[id]) delete merged[id];
+  });
+  return merged;
+}
+
+function getLearningStoragePrefix(scope = learningStorageScope) {
+  return scope || 'guest';
+}
+
+function getLearningStorageKey(name, scope = learningStorageScope) {
+  return `${getLearningStoragePrefix(scope)}:${name}`;
+}
+
+function getCurrentUserLearningScope() {
+  if (!currentUser) return 'guest';
+  const id = currentUser.uid || currentUser.email || currentUser.nickname || 'unknown';
+  return `user:${String(id).replace(/[^a-zA-Z0-9_.@-]/g, '_')}`;
+}
+
+function getUserMode() {
+  return currentUser ? 'account' : 'guest';
+}
+
+function resetLearningState() {
+  wrongSet = new Set();
+  favSet = new Set();
+  answeredSet = new Set();
+  practiceRecords = {};
+  pendingPracticeRecords.clear();
+}
+
+function loadLearningState(scope = learningStorageScope) {
+  learningStorageScope = getLearningStoragePrefix(scope);
+  resetLearningState();
+  try { wrongSet = new Set(JSON.parse(localStorage.getItem(getLearningStorageKey('wrongSet')) || '[]')); } catch(e) {}
+  try { favSet = new Set(JSON.parse(localStorage.getItem(getLearningStorageKey('favSet')) || '[]')); } catch(e) {}
+  try { answeredSet = new Set(JSON.parse(localStorage.getItem(getLearningStorageKey('answeredSet')) || '[]')); } catch(e) {}
+  try { practiceRecords = JSON.parse(localStorage.getItem(getLearningStorageKey('practiceRecords')) || '{}') || {}; } catch(e) {}
+}
+
+function migrateLegacyLearningState() {
+  if (localStorage.getItem('learningStateMigratedV2') === '1') return;
+  LEGACY_LEARNING_KEYS.forEach(key => {
+    const legacyValue = localStorage.getItem(key);
+    const guestKey = getLearningStorageKey(key, 'guest');
+    if (legacyValue !== null && localStorage.getItem(guestKey) === null) {
+      try { localStorage.setItem(guestKey, legacyValue); } catch(e) {}
+    }
+  });
+  try { localStorage.setItem('learningStateMigratedV2', '1'); } catch(e) {}
+}
+
+function switchLearningScope(scope) {
+  const previousQuestionId = filteredQuestions[currentIndex] && filteredQuestions[currentIndex].id;
+  saveLocalLearningState();
+  loadLearningState(scope);
+  const mode = document.getElementById('selMode')?.value || '';
+  if (allQuestions.length && (mode === 'wrong' || mode === 'fav')) {
+    applyFilters();
+  } else {
+    updateTopBar();
+    if (previousQuestionId && filteredQuestions.length) {
+      const nextIndex = filteredQuestions.findIndex(q => q.id === previousQuestionId);
+      if (nextIndex >= 0) currentIndex = nextIndex;
+    }
+    updateAnswerSheet();
+    if (filteredQuestions.length > 0 && currentIndex >= 0) {
+      renderQuestion(filteredQuestions[currentIndex]);
+      updateAnswerSheet();
+    }
+  }
+}
+
+function saveLocalLearningState() {
+  try { localStorage.setItem(getLearningStorageKey('wrongSet'), JSON.stringify([...wrongSet])); } catch(e) {}
+  try { localStorage.setItem(getLearningStorageKey('favSet'), JSON.stringify([...favSet])); } catch(e) {}
+  try { localStorage.setItem(getLearningStorageKey('answeredSet'), JSON.stringify([...answeredSet])); } catch(e) {}
+  try { localStorage.setItem(getLearningStorageKey('practiceRecords'), JSON.stringify(practiceRecords)); } catch(e) {}
+}
+
+function scheduleCloudSync() {
+  saveLocalLearningState();
+  if (!currentUser || !cloudbaseDb) return;
+  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => pushLearningStateToCloud().catch(err => console.warn('Cloud sync failed', err)), 1200);
+}
+
+async function pushLearningStateToCloud() {
+  if (!currentUser || !cloudbaseDb || cloudSyncing) return false;
+  cloudSyncing = true;
+  try {
+    const state = {
+      userId: currentUser.uid,
+      wrongIds: [...wrongSet],
+      favIds: [...favSet],
+      answeredIds: [...answeredSet],
+      answeredCount: answeredSet.size,
+      wrongCount: wrongSet.size,
+      practiceRecords,
+      schemaVersion: 1,
+      updatedAt: Date.now(),
+    };
+    await upsertCloudDoc('learning_state', currentUser.uid, state);
+    const pending = [...pendingPracticeRecords.values()];
+    await Promise.all(pending.slice(-20).map(record => {
+      const docId = `${currentUser.uid}_${record.id}_${record.answeredAt || Date.now()}`;
+      return upsertCloudDoc('practice_records', docId, Object.assign({ userId: currentUser.uid }, record, { updatedAt: Date.now() }));
+    }));
+    pendingPracticeRecords.clear();
+    return true;
+  } catch (error) {
+    console.warn('Push learning state failed', error);
+    if (isCloudCollectionMissingError(error) || isCloudPermissionError(error)) return false;
+    return false;
+  } finally {
+    cloudSyncing = false;
+  }
+}
+
+async function upsertCloudDoc(collectionName, docId, data) {
+  const ref = cloudbaseDb.collection(collectionName).doc(String(docId));
+  try {
+    await ref.update(data);
+  } catch (error) {
+    await ref.set(data);
+  }
+}
+
+function updateLoginButton() {
+  const btn = document.getElementById('loginButton');
+  if (!btn) return;
+  if (currentUser) {
+    btn.textContent = currentUser.nickname || currentUser.email || '已登录';
+    btn.classList.add('logged-in');
+    btn.title = '查看账号与同步状态';
+  } else {
+    btn.textContent = '登录';
+    btn.classList.remove('logged-in');
+    btn.title = CLOUDBASE_CONFIG.env ? '登录账号' : '配置 CloudBase 后登录';
+  }
+}
+
+function setAuthBusy(busy, text = '') {
+  const btn = document.getElementById('authSubmitBtn');
+  if (!btn) return;
+  btn.disabled = busy;
+  btn.textContent = busy ? text : (authMode === 'register' ? '注册并登录' : '登录');
+}
+
+function setLoginStatus(message, type = '') {
+  const status = document.getElementById('loginStatus');
+  if (!status) return;
+  status.textContent = message || '';
+  status.className = `login-status ${type || ''}`;
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || ''));
+}
+
+function getErrorText(error) {
+  return String(error && (error.message || error.code || error.errMsg || error) || '');
+}
+
+function isCloudCollectionMissingError(error) {
+  const msg = getErrorText(error).toLowerCase();
+  return msg.includes('not exist') || msg.includes('db or table') || msg.includes('collection') && msg.includes('not');
+}
+
+function isCloudPermissionError(error) {
+  const msg = getErrorText(error).toLowerCase();
+  return msg.includes('permission') || msg.includes('access denied') || msg.includes('unauthorized') || msg.includes('forbidden');
+}
+
+function getCloudbaseHint() {
+  if (!CLOUDBASE_CONFIG.env) return '请先填写 CloudBase 环境 ID；这是公开配置，不是密钥。';
+  if (!window.cloudbase && !window.tcb) return '已配置环境 ID，登录时会自动加载 CloudBase SDK。';
+  return currentUser ? '当前数据已切换到账号空间。' : '当前为访客模式，数据仅保存在本机。';
+}
+
+function getReadableAuthError(error) {
+  const msg = getErrorText(error);
+  if (msg.includes('ALREADY_EXISTS')) return '该邮箱已注册，请切换到登录页直接登录。';
+  if (isCloudCollectionMissingError(error)) return '已登录，但云端学习数据表暂不可用，请确认已创建 user_profiles、learning_state、practice_records。';
+  if (isCloudPermissionError(error)) return '已登录，但云端数据库权限暂不可用，请确认三个集合权限为读取和修改本人数据 [PRIVATE]。';
+  if (msg.includes('email-code-unsupported')) return '当前 SDK 未找到邮箱验证码接口，请确认 CloudBase JS SDK 加载成功，并已开启邮箱验证码登录。';
+  if (msg.includes('not enable mail') || msg.includes('mail login')) return 'CloudBase 还没有开启邮箱验证码/邮箱登录，请到“身份认证 -> 登录方式”开启邮箱验证码并配置发件邮箱。';
+  if (msg.includes('verification') || msg.includes('verify code')) return '验证码错误或已过期，请重新发送验证码后再试。';
+  if (msg.includes('is_user') || msg.includes('already')) return '这个邮箱可能已经注册过，请切换到登录页直接登录。';
+  if (msg.includes('password') || msg.includes('credential')) return '邮箱或密码不正确，请检查后重试。';
+  if (msg.includes('missing-env')) return '请先填写 CloudBase 环境 ID。';
+  if (msg.includes('sdk-not-loaded')) return 'CloudBase SDK 加载失败，请检查网络或稍后重试。';
+  if (msg.includes('account username incorrect format')) return '邮箱账号格式不正确，请确认使用完整邮箱地址登录。';
+  if (msg.includes('username-register-unsupported')) return '当前 SDK 未识别邮箱注册接口，请确认 CloudBase 已启用邮箱验证码。';
+  if (msg.includes('username-login-unsupported')) return '当前 SDK 未识别邮箱登录接口，请确认 CloudBase 已启用邮箱/账号密码登录。';
+  if (msg.includes('email-register-unsupported')) return '当前 SDK 未启用邮箱注册，请在 CloudBase 身份认证中开启邮箱账号。';
+  if (msg.includes('email-login-unsupported')) return '当前 SDK 未启用邮箱登录，请在 CloudBase 身份认证中开启邮箱账号。';
+  return msg || '登录失败，请检查 CloudBase 配置和账号密码。';
 }
 
 // ==================== EXAM MODE ====================
@@ -1656,6 +2571,15 @@ function submitExam() {
     }
     return {...q, userAns, isCorrect};
   });
+  results.forEach(r => {
+    if (!r || !r.id) return;
+    answeredSet.add(r.id);
+    if (r.isCorrect === false) wrongSet.add(r.id);
+    recordPracticeAnswer(r, r.userAns || '', r.isCorrect);
+  });
+  saveLocalLearningState();
+  scheduleCloudSync();
+  updateTopBar();
 
   document.getElementById('examView').dataset.state = 'done';
   document.getElementById('examView').dataset.results = JSON.stringify({totalScore, results, seconds: examSeconds});
@@ -1678,6 +2602,7 @@ function showExamResult() {
       用时: ${m}分${s}秒 | 答对: ${results.filter(r=>r.isCorrect).length}题 | 答错: ${wrongOnes.length}题
     </div>
     <button onclick="reviewExam()" class="btn btn-primary" style="margin:8px;">查看错题</button>
+    <button onclick="generateExamReport()" class="btn btn-purple" style="margin:8px;">生成练题报告</button>
     <button onclick="initExamConfig()" class="btn btn-secondary" style="margin:8px;">重新考试</button>
   </div>`;
 
@@ -1704,6 +2629,34 @@ function showExamResult() {
     html += '</div>';
   }
   document.getElementById('examView').innerHTML = html;
+}
+
+async function generateExamReport() {
+  let data;
+  try { data = JSON.parse(document.getElementById('examView').dataset.results); } catch(e) { return; }
+  const content = document.getElementById('aiExplainContent');
+  const mask = document.getElementById('aiModalMask');
+  const title = document.getElementById('aiModalTitle');
+  if (!content || !mask) return;
+  currentAiAction = 'exam-report';
+  if (title) title.textContent = 'AI 考试报告';
+  const payload = buildPracticeReportPayload(data.results || [], '考试模式');
+  const cacheKey = getAiCacheKey('exam-report', 'exam', JSON.stringify(payload.stats));
+  const cached = getAiCache(cacheKey);
+  if (cached) {
+    content.innerHTML = renderAiText(cached);
+    mask.classList.add('visible');
+    return;
+  }
+  content.innerHTML = '<div class="ai-loading">AI 正在生成考试报告...</div>';
+  mask.classList.add('visible');
+  try {
+    const result = await callAiProxy('/api/practice-report', payload);
+    setAiCache(cacheKey, result.content);
+    content.innerHTML = renderAiText(result.content);
+  } catch (error) {
+    content.innerHTML = `<div class="ai-error">AI 报告暂不可用。</div>${buildLocalPracticeReport(payload)}`;
+  }
 }
 
 function selfGradeText(btn, idx, correct, points) {
