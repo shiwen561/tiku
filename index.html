@@ -679,13 +679,6 @@ body {
         <div class="login-status" id="loginStatus"></div>
         <button class="btn btn-primary" id="authSubmitBtn" type="submit" style="width:100%;">登录</button>
       </form>
-      <div class="login-config">
-        <div class="login-help">CloudBase 环境 ID 是公开配置，不是密钥。创建腾讯云开发环境后填入一次即可。</div>
-        <div class="login-config-row" style="margin-top:10px;">
-          <input id="cloudbaseEnvInput" type="text" placeholder="例如：your-env-id-123456">
-          <button class="btn btn-outline" type="button" onclick="saveCloudbaseEnv()">保存</button>
-        </div>
-      </div>
     </div>
     <div class="ai-modal-footer">
       <button class="btn btn-outline" type="button" onclick="logout()">退出登录</button>
@@ -891,8 +884,7 @@ let pendingPracticeRecords = new Map();
 // window.CLOUDBASE_CONFIG = { env: 'your-cloudbase-env-id' }
 const CLOUDBASE_CONFIG = Object.assign(
   { env: '', region: '' },
-  window.CLOUDBASE_CONFIG || {},
-  { env: localStorage.getItem('cloudbaseEnv') || (window.CLOUDBASE_CONFIG && window.CLOUDBASE_CONFIG.env) || '' }
+  window.CLOUDBASE_CONFIG || {}
 );
 let cloudbaseApp = null;
 let cloudbaseAuth = null;
@@ -1745,8 +1737,6 @@ function login() {
 
 function openLoginModal() {
   const mask = document.getElementById('loginModalMask');
-  const envInput = document.getElementById('cloudbaseEnvInput');
-  if (envInput) envInput.value = CLOUDBASE_CONFIG.env || '';
   setLoginStatus(currentUser ? `当前已登录：${currentUser.nickname || currentUser.email || currentUser.uid}` : getCloudbaseHint(), currentUser ? 'success' : '');
   updateLoginButton();
   if (mask) mask.classList.add('visible');
@@ -1851,20 +1841,6 @@ async function logout() {
   switchLearningScope('guest');
   updateLoginButton();
   setLoginStatus('已退出登录，当前显示访客本地记录。', 'success');
-}
-
-function saveCloudbaseEnv() {
-  const input = document.getElementById('cloudbaseEnvInput');
-  const env = input ? input.value.trim() : '';
-  if (!env) return setLoginStatus('请填写 CloudBase 环境 ID。', 'error');
-  CLOUDBASE_CONFIG.env = env;
-  localStorage.setItem('cloudbaseEnv', env);
-  cloudbaseReadyPromise = null;
-  cloudbaseApp = null;
-  cloudbaseAuth = null;
-  cloudbaseDb = null;
-  setLoginStatus('环境 ID 已保存，可以登录或注册了。', 'success');
-  initCloudbaseAuth();
 }
 
 async function initCloudbaseAuth() {
@@ -2233,7 +2209,7 @@ function updateLoginButton() {
   } else {
     btn.textContent = '登录';
     btn.classList.remove('logged-in');
-    btn.title = CLOUDBASE_CONFIG.env ? '登录账号' : '配置 CloudBase 后登录';
+    btn.title = CLOUDBASE_CONFIG.env ? '登录账号' : '服务配置异常';
   }
 }
 
@@ -2270,8 +2246,8 @@ function isCloudPermissionError(error) {
 }
 
 function getCloudbaseHint() {
-  if (!CLOUDBASE_CONFIG.env) return '请先填写 CloudBase 环境 ID；这是公开配置，不是密钥。';
-  if (!window.cloudbase && !window.tcb) return '已配置环境 ID，登录时会自动加载 CloudBase SDK。';
+  if (!CLOUDBASE_CONFIG.env) return '服务配置异常，请稍后再试或联系管理员。';
+  if (!window.cloudbase && !window.tcb) return '当前为访客模式，登录时会自动连接云端服务。';
   return currentUser ? '当前数据已切换到账号空间。' : '当前为访客模式，数据仅保存在本机。';
 }
 
@@ -2285,8 +2261,8 @@ function getReadableAuthError(error) {
   if (msg.includes('verification') || msg.includes('verify code')) return '验证码错误或已过期，请重新发送验证码后再试。';
   if (msg.includes('is_user') || msg.includes('already')) return '这个邮箱可能已经注册过，请切换到登录页直接登录。';
   if (msg.includes('password') || msg.includes('credential')) return '邮箱或密码不正确，请检查后重试。';
-  if (msg.includes('missing-env')) return '请先填写 CloudBase 环境 ID。';
-  if (msg.includes('sdk-not-loaded')) return 'CloudBase SDK 加载失败，请检查网络或稍后重试。';
+  if (msg.includes('missing-env')) return '服务配置异常，请稍后再试或联系管理员。';
+  if (msg.includes('sdk-not-loaded')) return '服务初始化失败，请检查网络后重试。';
   if (msg.includes('account username incorrect format')) return '邮箱账号格式不正确，请确认使用完整邮箱地址登录。';
   if (msg.includes('username-register-unsupported')) return '当前 SDK 未识别邮箱注册接口，请确认 CloudBase 已启用邮箱验证码。';
   if (msg.includes('username-login-unsupported')) return '当前 SDK 未识别邮箱登录接口，请确认 CloudBase 已启用邮箱/账号密码登录。';
